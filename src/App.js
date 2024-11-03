@@ -9,6 +9,11 @@ import { Dashboard } from "./Pages";
 import { useStateContext } from "./contexts/ContextProvider";
 
 import "./App.css";
+import ListSiswa from "./Pages/ListSiswa";
+import ListGuru from "./Pages/ListGuru";
+import ListPelajaran from "./Pages/ListPelajaran";
+import ListKelas from "./Pages/ListKelas";
+import Homepage from "./Pages/Homepages/homepage";
 
 const App = () => {
   const { activeMenu, themeSettings, setThemeSettings, currentColor, currentMode } = useStateContext();
@@ -59,8 +64,12 @@ const App = () => {
 
               <Routes>
                 {/* Dashboard Routes */}
-                <Route path="/" element={<Dashboard />} />
+                <Route path="/" element={<Homepage />} />
                 <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/siswa" element={<ListSiswa />} />
+                <Route path="/guru" element={<ListGuru />} />
+                <Route path="/pelajaran" element={<ListPelajaran />} />
+                <Route path="/kelas" element={<ListKelas />} />
               </Routes>
             </div>
 

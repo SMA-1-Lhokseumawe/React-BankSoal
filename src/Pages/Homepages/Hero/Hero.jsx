@@ -47,7 +47,7 @@ const Hero = () => {
                 <span className="w-10 h-10 bg-secondary/15 rounded-full flex justify-center items-center">
                   <FaPlay className="text-secondary" />
                 </span>
-                See how it works
+                Cara Menggunakan Bank Soal
               </button>
             </motion.div>
           </div>

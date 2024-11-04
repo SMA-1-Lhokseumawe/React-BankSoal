@@ -13,6 +13,8 @@ import { GiLouvrePyramid } from 'react-icons/gi';
 import { PiChalkboardTeacher } from "react-icons/pi";
 import { CgPassword } from "react-icons/cg";
 
+import LogoSMA from "../assets/Logo1.png";
+
 
 import { useStateContext } from '../contexts/ContextProvider'
 
@@ -139,7 +141,7 @@ const Sidebar = () => {
       {activeMenu && (<>
         <div className='flex justify-between items-center'>
           <Link to="/dashboard" onClick={handleCloseSideBar} className='items-center gap-3 ml-3 mt-4 flex text-xl font-extrabold tracking-tight dark:text-white text-slate-900'>
-          <SiShopware /> <span>SMA 1 Lhokseumawe</span>
+          <img src={LogoSMA} alt="Logo SMA 1 Lhokseumawe" style={{width: "35px"}} /> <span>SMA 1 Lhokseumawe</span>
           </Link>
             <button type='button' onClick={() => setActiveMenu((prevActiveMenu) => !prevActiveMenu)} className='text-xl rounded-full p-3 hover:bg-light-gray mt-4 block md:hidden'>
               <MdOutlineCancel />

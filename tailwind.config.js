@@ -1,5 +1,6 @@
+/** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ['./src/**/*.{js,jsx,ts,tsx}'],
+  content: ["./index.html", "./src/**/*.{js,jsx,ts,tsx}"],
   darkMode: 'class',
   theme: {
     fontFamily: {
@@ -16,6 +17,10 @@ module.exports = {
         'secondary-dark-bg': '#33373E',
         'light-gray': '#F7F7F7',
         'half-transparent': 'rgba(0, 0, 0, 0.5)',
+      },
+      colors: {
+        primary: "#ffcf3a",
+        secondary: "#0063ff",
       },
       borderWidth: {
         1: '1px',
@@ -39,8 +44,17 @@ module.exports = {
         590: '590px',
       },
       backgroundImage: {
-        'hero-pattern':
-          "url('https://i.ibb.co/MkvLDfb/Rectangle-4389.png')",
+        'hero-pattern': "url('https://i.ibb.co/MkvLDfb/Rectangle-4389.png')",
+      },
+      container: {
+        center: true,
+        padding: {
+          DEFAULT: "1rem",
+          sm: "2rem",
+          lg: "4rem",
+          xl: "5rem",
+          "2xl": "6rem",
+        },
       },
     },
   },

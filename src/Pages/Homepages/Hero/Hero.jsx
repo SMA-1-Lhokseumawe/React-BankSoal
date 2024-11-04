@@ -1,8 +1,8 @@
 import React from "react";
-import HeroImg from "../../assets/hero.png";
+import HeroImg from "../../../assets/heroimg.jpg";
 import { FaPlay } from "react-icons/fa";
 import { motion } from "framer-motion";
-import { SlideRight } from "../../utility/animation";
+import { SlideRight } from "../../../utility/animation";
 
 const Hero = () => {
   return (
@@ -17,7 +17,7 @@ const Hero = () => {
               animate="visible"
               className="text-orange-600 uppercase font-semibold"
             >
-              100% Satisfaction Guarantee
+              Platform Analisis Kemampuan Siswa
             </motion.p>
             <motion.h1
               variants={SlideRight(0.6)}
@@ -25,15 +25,14 @@ const Hero = () => {
               animate="visible"
               className="text-5xl font-semibold lg:text-6xl !leading-tight"
             >
-              Find Your Perfect <span className="text-primary">Tutor</span>
+              Aplikasi Bank Soal untuk <span className="text-primary">Evaluasi Siswa</span>
             </motion.h1>
             <motion.p
               variants={SlideRight(0.8)}
               initial="hidden"
               animate="visible"
             >
-              We help you find perfect tutor for 1-on-1 lessons. It is
-              completely free and private
+              Kami membantu SMA 1 Lhokseumawe memantau kemampuan siswa melalui platform bank soal yang efektif dan aman.
             </motion.p>
             {/* button section */}
             <motion.div
@@ -42,12 +41,12 @@ const Hero = () => {
               animate="visible"
               className="flex gap-8 justify-center md:justify-start !mt-8 items-center"
             >
-              <button className="primary-btn">Get Started</button>
+              <button className="primary-btn">Mulai Sekarang</button>
               <button className="flex justify-end items-center gap-2 font-semibold">
                 <span className="w-10 h-10 bg-secondary/15 rounded-full flex justify-center items-center">
                   <FaPlay className="text-secondary" />
                 </span>
-                Cara Menggunakan Bank Soal
+                Panduan Penggunaan Aplikasi
               </button>
             </motion.div>
           </div>

@@ -1,5 +1,6 @@
 import React from 'react';
 import { MdOutlineCancel } from 'react-icons/md';
+import { RiNotification3Line } from 'react-icons/ri';
 
 import { Button } from '.';
 import { chatData } from '../data/dummy';
@@ -28,7 +29,7 @@ const Notification = () => {
           </div>
         ))}
         <div className="mt-5">
-          <Button color="white" bgColor={currentColor} text="See all notifications" borderRadius="10px" width="full" />
+          <Button color="white" bgColor={currentColor} icon={<RiNotification3Line />} text="See all notifications" borderRadius="10px" />
         </div>
       </div>
     </div>

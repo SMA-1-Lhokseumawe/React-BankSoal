@@ -1,5 +1,6 @@
 import React from 'react';
 import { MdOutlineCancel } from 'react-icons/md';
+import { AiOutlineLogout } from "react-icons/ai";
 
 import { Button } from '.';
 import { userProfileData } from '../data/dummy';
@@ -53,11 +54,7 @@ const UserProfile = () => {
       </div>
       <div className="mt-5">
         <Button
-          color="white"
-          bgColor={currentColor}
-          text="Logout"
-          borderRadius="10px"
-          width="full"
+          color="white" bgColor={currentColor} borderRadius="10px" icon={<AiOutlineLogout />} text='Keluar'
         />
       </div>
     </div>

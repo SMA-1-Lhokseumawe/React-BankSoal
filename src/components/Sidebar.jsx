@@ -1,15 +1,10 @@
 import React from 'react'
 import { Link, NavLink } from 'react-router-dom'
-import { SiShopware } from 'react-icons/si'
 import { MdOutlineCancel } from 'react-icons/md'
-import { AiOutlineCalendar, AiOutlineShoppingCart, AiOutlineAreaChart, AiOutlineBarChart, AiOutlineStock } from 'react-icons/ai';
-import { FiShoppingBag, FiEdit, FiPieChart, FiBarChart, FiCreditCard, FiStar, FiShoppingCart } from 'react-icons/fi';
-import { BsKanban, BsBook, BsFillPersonLinesFill, BsPencilSquare, BsPeople, BsDoorOpen } from 'react-icons/bs';
+import { AiOutlineAreaChart, AiOutlineBarChart, AiOutlineStock } from 'react-icons/ai';
+import { FiEdit, FiPieChart } from 'react-icons/fi';
+import { BsKanban, BsBook, BsFillPersonLinesFill, BsPencilSquare, BsPeople, BsDoorOpen, BsChatLeftText } from 'react-icons/bs';
 import { BiColorFill, BiSolidDashboard, BiSolidBookBookmark, BiSolidBookmarks } from 'react-icons/bi';
-import { IoMdContacts } from 'react-icons/io';
-import { RiContactsLine, RiStockLine } from 'react-icons/ri';
-import { TiTick } from 'react-icons/ti';
-import { GiLouvrePyramid } from 'react-icons/gi';
 import { PiChalkboardTeacher } from "react-icons/pi";
 import { CgPassword } from "react-icons/cg";
 
@@ -73,8 +68,8 @@ const Sidebar = () => {
       title: 'Apps',
       links: [
         {
-          name: 'calendar',
-          icon: <AiOutlineCalendar />,
+          name: 'diskusi',
+          icon: <BsChatLeftText />,
         },
         {
           name: 'kanban',

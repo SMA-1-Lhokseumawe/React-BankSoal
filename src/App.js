@@ -15,19 +15,22 @@ import ListPelajaran from "./Pages/ListPelajaran";
 import ListKelas from "./Pages/ListKelas";
 import Homepage from "./Pages/Homepages/homepage";
 import LoginPage from "./Pages/LoginPage";
+import FormDiscussion from "./Pages/Discussion/FormDiscussion";
+import Discussion from "./Pages/Discussion";
 
 const AppContent = () => {
   const { activeMenu, themeSettings, setThemeSettings, currentColor, currentMode } = useStateContext();
   const location = useLocation(); // Mendapatkan informasi lokasi saat ini
   const isHomepage = location.pathname === "/";
   const isLoginPage = location.pathname === "/login";
+  const isFormDiscussion = location.pathname === "/form-discussion";
 
 
   return (
     <div className={currentMode === 'Dark' ? 'dark' : ''}>
       <div className="flex relative dark:bg-main-dark-bg">
         {/* Tombol Settings dengan Tooltip */}
-        {!isHomepage && !isLoginPage && (
+        {!isHomepage && !isLoginPage && !isFormDiscussion && (
           <div className="fixed right-4 bottom-4" style={{ zIndex: "1000" }}>
             <button
               type="button"
@@ -45,11 +48,11 @@ const AppContent = () => {
         )}
 
         {/* Sidebar */}
-        {!isHomepage && !isLoginPage && activeMenu ? (
+        {!isHomepage && !isLoginPage && !isFormDiscussion && activeMenu ? (
           <div className="w-72 fixed sidebar dark:bg-secondary-dark-bg bg-white">
             <Sidebar />
           </div>
-        ) : !isHomepage && !isLoginPage ? (
+        ) : !isHomepage && !isLoginPage && !isFormDiscussion ? (
           <div className="w-0 dark:bg-secondary-dark-bg">
             <Sidebar />
           </div>
@@ -58,10 +61,10 @@ const AppContent = () => {
         {/* Main Content */}
         <div
           className={`dark:bg-main-dark-bg bg-main-bg min-h-screen w-full ${
-            activeMenu && !isHomepage && !isLoginPage ? "md:ml-72" : "flex-2"
+            activeMenu && !isHomepage && !isLoginPage && !isFormDiscussion ? "md:ml-72" : "flex-2"
           }`}
         >
-          {!isHomepage && !isLoginPage && (
+          {!isHomepage && !isLoginPage && !isFormDiscussion && (
             <div className="fixed md:static bg-main-bg dark:bg-main-dark-bg navbar w-full">
               <Navbar />
             </div>
@@ -74,6 +77,8 @@ const AppContent = () => {
               {/* Dashboard Routes */}
               <Route path="/" element={<Homepage />} />
               <Route path="/login" element={<LoginPage />} />
+              <Route path="/form-discussion" element={<FormDiscussion />} />
+              <Route path="/diskusi" element={<Discussion />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/siswa" element={<ListSiswa />} />
               <Route path="/guru" element={<ListGuru />} />
@@ -82,7 +87,7 @@ const AppContent = () => {
             </Routes>
           </div>
 
-          {!isHomepage && !isLoginPage && <Footer />}
+          {!isHomepage && !isLoginPage && !isFormDiscussion && <Footer />}
         </div>
       </div>
     </div>

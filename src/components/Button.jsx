@@ -2,10 +2,11 @@ import React from 'react';
 import { AiOutlineLogout } from 'react-icons/ai';
 import { RiNotification3Line } from 'react-icons/ri';
 
-const Button = ({ bgColor, color, size, text, borderRadius, icon }) => {
+const Button = ({ bgColor, color, size, text, borderRadius, icon, onClick }) => {
   return (
     <button
       type="button"
+      onClick={onClick}
       style={{ backgroundColor: bgColor, color, borderRadius }}
       className={`flex items-center test-${size} p-3 hover:drop-shadow-xl`}
     >

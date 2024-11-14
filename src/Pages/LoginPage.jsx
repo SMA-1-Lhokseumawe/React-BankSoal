@@ -19,7 +19,10 @@ const LoginPage = () => {
     }
     // Reset state only if login was attempted
     if (isError || isSuccess) {
-      dispatch(reset());
+      const timer = setTimeout(() => {
+        dispatch(reset());
+      }, 3000);
+      return () => clearTimeout(timer);
     }
   }, [user, isSuccess, isError, dispatch, navigate]);
 
@@ -40,7 +43,7 @@ const LoginPage = () => {
               className="border border-gray-300 rounded-lg p-6 max-w-md shadow-[0_2px_22px_-4px_rgba(93,96,127,0.2)] max-md:mx-auto"
             >
               <form onSubmit={Auth} className="space-y-4">
-                <div className="mb-8">
+                <div className="mb-1">
                   <h3 className="text-gray-800 text-3xl font-extrabold">Sign in</h3>
                   <p className="text-gray-500 text-sm mt-4 leading-relaxed">
                     Masuk ke akun Anda dan temukan berbagai fitur untuk

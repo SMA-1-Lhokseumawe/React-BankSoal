@@ -1,4 +1,8 @@
-import React from 'react'
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { getMe } from "../features/authSlice";
+
 import { Header } from "../components";
 
 const ListPelajaran = () => {
@@ -9,6 +13,20 @@ const ListPelajaran = () => {
         { id: 80, nama: "Fisika", kelas: "12B" },
         { id: 23, nama: "B. Indonesia", kelas: "10B" },
       ];
+
+      const dispatch = useDispatch();
+      const navigate = useNavigate();
+      const { isError } = useSelector((state) => state.auth);
+    
+      useEffect(() => {
+        dispatch(getMe());
+      }, [dispatch]);
+    
+      useEffect(() => {
+        if (isError) {
+          navigate("/");
+        }
+      }, [isError, navigate]);
 
   return (
     <div className="m-2 md:m-10 p-2 md:p-10 bg-white dark:text-white dark:bg-secondary-dark-bg rounded-3xl border border-gray-300">

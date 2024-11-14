@@ -1,4 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { getMe } from "../features/authSlice";
+
 import { FaArrowUp, FaArrowDown, FaCommentDots, FaPlus } from "react-icons/fa";
 import { CiPaperplane } from "react-icons/ci";
 import { useStateContext } from "../contexts/ContextProvider";
@@ -36,6 +40,20 @@ const Discussion = () => {
   const [data, setData] = useState(questions);
   const [showCommentForm, setShowCommentForm] = useState(null);
   const [commentText, setCommentText] = useState("");
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { isError } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    dispatch(getMe());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (isError) {
+      navigate("/");
+    }
+  }, [isError, navigate]);
 
   const handleVote = (id, type) => {
     setData((prevData) =>

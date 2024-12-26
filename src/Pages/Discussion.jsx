@@ -26,7 +26,7 @@ const questions = [
     title:
       "What is blockchain technology, and how is it used in cryptocurrencies?",
     description:
-      "Discover the s revolutionary technology of blockchain and its impact on digital currencies like Bitcoin.",
+      "Discover the revolutionary technology of blockchain and its impact on digital currencies like Bitcoin.",
     author: "Kartik",
     time: "11 minutes ago",
     upvotes: 0,

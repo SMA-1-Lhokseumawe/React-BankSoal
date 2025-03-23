@@ -6,8 +6,11 @@ import { getMe } from "../features/authSlice";
 
 import { Header } from "../components";
 
+import { FaEdit, FaTrash } from "react-icons/fa";
+
 const ListKelas = () => {
   const [kelas, setKelas] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -18,57 +21,145 @@ const ListKelas = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    if (isError) {
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      getKelas();
+    } else {
       navigate("/");
     }
-  }, [isError, navigate]);
-
-  useEffect(() => {
-    getKelas();
-  }, []);
+  }, [navigate]);
 
   const getKelas = async () => {
+    setLoading(true);
     try {
-      const response = await axios.get("http://localhost:5000/kelas");
+      const token = localStorage.getItem("accessToken");
+      const response = await axios.get("http://localhost:5000/kelas", {
+        headers: {
+          Authorization: `Bearer ${token}`, // Add token to headers
+        },
+      });
       setKelas(response.data);
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching data:", error);
+      setLoading(false);
     }
+  };
+
+  const handleTambah = () => {
+    navigate("/kelas/tambah-kelas");
+  };
+
+  const handleEdit = (id) => {
+    navigate(`/kelas/${id}`);
+  };
+
+  const handleDeleteKelas = async (userId) => {
+    const token = localStorage.getItem("accessToken");
+    await axios.delete(`http://localhost:5000/kelas/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    getKelas();
   };
 
   return (
     <div className="m-2 md:m-10 p-2 md:p-10 bg-white dark:text-white dark:bg-secondary-dark-bg rounded-3xl border border-gray-300">
-      <Header category="Page" title="Data Kelas" />
-      <table className="min-w-full leading-normal">
-        <thead>
-          <tr>
-            <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider dark:text-white dark:bg-secondary-dark-bg">
-              ID
-            </th>
-            <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider dark:text-white dark:bg-secondary-dark-bg">
-              Kelas
-            </th>
-            <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider dark:text-white dark:bg-secondary-dark-bg">
-              Action
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {kelas.map((kelas, index) => (
-            <tr key={kelas.id}>
-              <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm dark:text-white dark:bg-secondary-dark-bg">
-                {index + 1}
-              </td>
-              <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm dark:text-white dark:bg-secondary-dark-bg">
-                {kelas.kelas}
-              </td>
-              <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm dark:text-white dark:bg-secondary-dark-bg">
-                <button type="button">button</button>
-              </td>
+      <div className="flex justify-between items-center header-container">
+        <div className="kebawah-dikit">
+          <Header category="Page" title="Data Kelas" />
+        </div>
+        <div className="flex flex-col sm:flex-row items-center search-container">
+          <button
+            onClick={handleTambah}
+            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700 mt-2 sm:mt-0"
+          >
+            Tambah Data
+          </button>
+        </div>
+      </div>
+      
+      <div className="overflow-x-auto">
+        <table className="min-w-full leading-normal">
+          <thead>
+            <tr>
+              <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider dark:text-white dark:bg-secondary-dark-bg">
+                ID
+              </th>
+              <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider dark:text-white dark:bg-secondary-dark-bg">
+                Kelas
+              </th>
+              <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider dark:text-white dark:bg-secondary-dark-bg">
+                Action
+              </th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {loading ? (
+              <tr>
+                <td colSpan="3" className="px-5 py-10 text-center text-sm text-gray-500 dark:text-gray-400">
+                  Loading...
+                </td>
+              </tr>
+            ) : kelas.length > 0 ? (
+              kelas.map((kelas, index) => (
+                <tr key={kelas.id}>
+                  <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm dark:text-white dark:bg-secondary-dark-bg">
+                    {index + 1}
+                  </td>
+                  <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm dark:text-white dark:bg-secondary-dark-bg">
+                    {kelas.kelas}
+                  </td>
+                  <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm dark:text-white dark:bg-secondary-dark-bg">
+                  <div className="flex items-center space-x-2">
+                      <button
+                        type="button"
+                        className="text-blue-500 hover:text-blue-700"
+                        onClick={() => handleEdit(kelas.id)}
+                      >
+                        <FaEdit />
+                      </button>
+                      <button
+                        type="button"
+                        className="text-red-500 hover:text-red-700"
+                        onClick={() => handleDeleteKelas(kelas.id)}
+                      >
+                        <FaTrash />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="3" className="px-5 py-10 text-center dark:text-white dark:bg-secondary-dark-bg">
+                  <div className="flex flex-col items-center justify-center">
+                    <svg 
+                      className="w-16 h-16 text-gray-400 dark:text-gray-500 mb-4" 
+                      fill="none" 
+                      stroke="currentColor" 
+                      viewBox="0 0 24 24" 
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round" 
+                        strokeWidth="2" 
+                        d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    <p className="text-lg font-medium text-gray-600 dark:text-gray-300">Tidak ada data kelas</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                      Silakan tambahkan data kelas baru dengan klik tombol "Tambah Data"
+                    </p>
+                  </div>
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

@@ -13,6 +13,13 @@ import ListSiswa from "./Pages/ListSiswa";
 import ListGuru from "./Pages/ListGuru";
 import ListPelajaran from "./Pages/ListPelajaran";
 import ListKelas from "./Pages/ListKelas";
+import ListUsers from "./Pages/ListUsers";
+import AddKelas from "./Pages/AddKelas";
+import AddPelajaran from "./Pages/AddPelajaran";
+import EditKelas from "./Pages/EditKelas";
+import EditPelajaran from "./Pages/EditPelajaran";
+import EditUsers from "./Pages/EditUsers";
+import GantiPassword from "./Pages/GantiPassword";
 import Homepage from "./Pages/Homepages/homepage";
 import LoginPage from "./Pages/LoginPage";
 import FormDiscussion from "./Pages/Discussion/FormDiscussion";
@@ -83,7 +90,14 @@ const AppContent = () => {
               <Route path="/siswa" element={<ListSiswa />} />
               <Route path="/guru" element={<ListGuru />} />
               <Route path="/pelajaran" element={<ListPelajaran />} />
+              <Route path="/users" element={<ListUsers />} />
               <Route path="/kelas" element={<ListKelas />} />
+              <Route path="/kelas/tambah-kelas" element={<AddKelas />} />
+              <Route path="/pelajaran/tambah-pelajaran" element={<AddPelajaran />} />
+              <Route path="/kelas/:id" element={<EditKelas />} />
+              <Route path="/pelajaran/:id" element={<EditPelajaran />} />
+              <Route path="/users/:id" element={<EditUsers />} />
+              <Route path="/ganti-password" element={<GantiPassword />} />
             </Routes>
           </div>
 

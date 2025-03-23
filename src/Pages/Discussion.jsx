@@ -43,17 +43,20 @@ const Discussion = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { isError } = useSelector((state) => state.auth);
 
   useEffect(() => {
     dispatch(getMe());
   }, [dispatch]);
 
   useEffect(() => {
-    if (isError) {
-      navigate("/");
-    }
-  }, [isError, navigate]);
+      const token = localStorage.getItem("accessToken");
+      if (token) {
+        console.log("berhasil");
+        
+      } else {
+        navigate("/");
+      }
+    }, [navigate]);
 
   const handleVote = (id, type) => {
     setData((prevData) =>

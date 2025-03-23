@@ -151,17 +151,21 @@ const Dashboard = () => {
   
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { isError } = useSelector((state) => state.auth);
+  const { isError, user } = useSelector((state) => state.auth);
 
   useEffect(() => {
     dispatch(getMe());
   }, [dispatch]);
 
   useEffect(() => {
-    if (isError) {
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      console.log("berhasil");
+      
+    } else {
       navigate("/");
     }
-  }, [isError, navigate]);
+  }, [navigate]);
 
   return (
     <div className="mt-5">

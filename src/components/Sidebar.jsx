@@ -1,4 +1,5 @@
 import React from 'react'
+import { useSelector } from "react-redux";
 import { Link, NavLink } from 'react-router-dom'
 import { MdOutlineCancel } from 'react-icons/md'
 import { AiOutlineAreaChart, AiOutlineBarChart, AiOutlineStock } from 'react-icons/ai';
@@ -16,13 +17,19 @@ import { useStateContext } from '../contexts/ContextProvider'
 const Sidebar = () => {
   const { activeMenu, setActiveMenu, screenSize, currentColor } = useStateContext()
 
-  const links = [
+  const { user } = useSelector((state) => state.auth);
+  const userRole = user?.role || 'siswa'; // Default to 'siswa' if role is not provided
+
+  // Full links configuration
+  const allLinks = [
     {
       title: 'Dashboard',
       links: [
         {
           name: 'dashboard',
+          displayName: 'dashboard',
           icon: <BiSolidDashboard />,
+          allowedRoles: ['admin', 'guru', 'siswa'], // All roles can access dashboard
         },
       ],
     },
@@ -32,35 +39,51 @@ const Sidebar = () => {
       links: [
         {
           name: 'siswa',
+          displayName: 'siswa',
           icon: <BsFillPersonLinesFill />,
+          allowedRoles: ['admin', 'guru'], // Admin and guru can access siswa
         },
         {
           name: 'guru',
+          displayName: 'guru',
           icon: <PiChalkboardTeacher />,
+          allowedRoles: ['admin'], // Only admin can access guru
         },
         {
           name: 'kelas',
+          displayName: 'kelas',
           icon: <BsDoorOpen />,
+          allowedRoles: ['admin', 'guru'], // Admin and guru can access kelas
         },
         {
           name: 'ujian',
+          displayName: 'ujian',
           icon: <BsBook />,
+          allowedRoles: ['admin', 'guru'], // Admin and guru can access ujian
         },
         {
           name: 'soal',
+          displayName: 'soal',
           icon: <BsPencilSquare />,
+          allowedRoles: ['admin', 'guru'], // Admin and guru can access soal
         },
         {
           name: 'nilai',
+          displayName: 'nilai',
           icon: <BiSolidBookBookmark />,
+          allowedRoles: ['admin', 'guru'], // Admin and guru can access nilai
         },
         {
           name: 'pelajaran',
+          displayName: 'pelajaran',
           icon: <BiSolidBookBookmark />,
+          allowedRoles: ['admin', 'guru'], // Admin and guru can access pelajaran
         },
         {
-          name: 'modul belajar',
+          name: 'modul-belajar',
+          displayName: 'modul belajar',
           icon: <BiSolidBookmarks />,
+          allowedRoles: ['admin', 'guru'], // Admin and guru can access modul belajar
         },
       ],
     },
@@ -69,19 +92,27 @@ const Sidebar = () => {
       links: [
         {
           name: 'diskusi',
+          displayName: 'diskusi',
           icon: <BsChatLeftText />,
+          allowedRoles: ['admin', 'guru', 'siswa'], // All roles can access diskusi
         },
         {
           name: 'kanban',
+          displayName: 'kanban',
           icon: <BsKanban />,
+          allowedRoles: ['admin', 'guru'], // Admin and guru can access kanban
         },
         {
           name: 'editor',
+          displayName: 'editor',
           icon: <FiEdit />,
+          allowedRoles: ['admin', 'guru'], // Admin and guru can access editor
         },
         {
           name: 'color-picker',
+          displayName: 'color picker',
           icon: <BiColorFill />,
+          allowedRoles: ['admin', 'guru'], // Admin and guru can access color-picker
         },
       ],
     },
@@ -90,20 +121,28 @@ const Sidebar = () => {
       links: [
         {
           name: 'line',
+          displayName: 'line',
           icon: <AiOutlineStock />,
+          allowedRoles: ['admin', 'guru'], // Admin and guru can access line
         },
         {
           name: 'area',
+          displayName: 'area',
           icon: <AiOutlineAreaChart />,
+          allowedRoles: ['admin', 'guru'], // Admin and guru can access area
         },
   
         {
           name: 'bar',
+          displayName: 'bar',
           icon: <AiOutlineBarChart />,
+          allowedRoles: ['admin', 'guru'], // Admin and guru can access bar
         },
         {
           name: 'pie',
+          displayName: 'pie',
           icon: <FiPieChart />,
+          allowedRoles: ['admin', 'guru'], // Admin and guru can access pie
         },
       ],
     },
@@ -111,16 +150,43 @@ const Sidebar = () => {
       title: 'Setting',
       links: [
         {
-          name: 'ganti password',
+          name: 'ganti-password',
+          displayName: 'ganti password',
           icon: <CgPassword />,
+          allowedRoles: ['admin', 'guru', 'siswa'], // All roles can access ganti password
         },
         {
           name: 'users',
+          displayName: 'users',
           icon: <BsPeople />,
+          allowedRoles: ['admin'], // Only admin can access users
         },
       ],
     },
   ];
+
+  // Filter links based on user role
+  const filterLinksByRole = (links, role) => {
+    // Filter each category
+    const filteredCategories = links.map(category => {
+      // Filter links within this category
+      const filteredLinks = category.links.filter(link => 
+        link.allowedRoles.includes(role)
+      );
+      
+      // Return category with filtered links (only if it has any links)
+      return {
+        ...category,
+        links: filteredLinks
+      };
+    });
+    
+    // Only include categories that have at least one link
+    return filteredCategories.filter(category => category.links.length > 0);
+  };
+
+  // Get links based on user role
+  const links = filterLinksByRole(allLinks, userRole);
 
   const handleCloseSideBar = () => {
     if(activeMenu && screenSize <= 900){
@@ -128,7 +194,7 @@ const Sidebar = () => {
     }
   }
 
-  const activeLink = 'flex items-center gap-5 pl-4 pt-3 pb-2.5 rounded-lg  text-white  text-md m-2';
+  const activeLink = 'flex items-center gap-5 pl-4 pt-3 pb-2.5 rounded-lg text-white text-md m-2';
   const normalLink = 'flex items-center gap-5 pl-4 pt-3 pb-2.5 rounded-lg text-md text-gray-700 dark:text-gray-200 dark:hover:text-black hover:bg-light-gray m-2';
 
   return (
@@ -151,7 +217,7 @@ const Sidebar = () => {
               {item.links.map((link) => (
                 <NavLink to={`/${link.name}`} key={link.name} onClick={handleCloseSideBar} style={({ isActive }) => ({ backgroundColor: isActive ? currentColor: '' })} className={({ isActive }) => isActive ? activeLink : normalLink }>
                   {link.icon}
-                  <span className='capitalize'>{link.name}</span>
+                  <span className='capitalize'>{link.displayName}</span>
                 </NavLink>
               ))}
             </div>

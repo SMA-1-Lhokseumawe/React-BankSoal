@@ -1,36 +1,84 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { getMe } from "../features/authSlice";
 
 import { Header } from "../components";
 
-const ListPelajaran = () => {
-    const pelajaranData = [
-        { id: 34, nama: "Matematika", kelas: "10A" },
-        { id: 67, nama: "Kimia", kelas: "11A" },
-        { id: 68, nama: "Biologi", kelas: "12A" },
-        { id: 80, nama: "Fisika", kelas: "12B" },
-        { id: 23, nama: "B. Indonesia", kelas: "10B" },
-      ];
+import { FaEdit, FaTrash } from "react-icons/fa";
 
-      const dispatch = useDispatch();
-      const navigate = useNavigate();
-      const { isError } = useSelector((state) => state.auth);
-    
-      useEffect(() => {
-        dispatch(getMe());
-      }, [dispatch]);
-    
-      useEffect(() => {
-        if (isError) {
-          navigate("/");
-        }
-      }, [isError, navigate]);
+const ListPelajaran = () => {
+  const [pelajaran, setPelajaran] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { isError } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    dispatch(getMe());
+  }, [dispatch]);
+
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      getPelajaran();
+    } else {
+      navigate("/");
+    }
+  }, [navigate]);
+
+  const getPelajaran = async () => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("accessToken");
+      const response = await axios.get("http://localhost:5000/pelajaran", {
+        headers: {
+          Authorization: `Bearer ${token}`, // Add token to headers
+        },
+      });
+      setPelajaran(response.data);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setLoading(false);
+    }
+  };
+
+  const handleTambah = () => {
+    navigate("/pelajaran/tambah-pelajaran");
+  };
+
+  const handleEdit = (id) => {
+    navigate(`/pelajaran/${id}`);
+  };
+
+  const handleDeletePelajaran = async (userId) => {
+    const token = localStorage.getItem("accessToken");
+    await axios.delete(`http://localhost:5000/pelajaran/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    getPelajaran();
+  };
 
   return (
     <div className="m-2 md:m-10 p-2 md:p-10 bg-white dark:text-white dark:bg-secondary-dark-bg rounded-3xl border border-gray-300">
-      <Header category="Page" title="Data Pelajaran" />
+      <div className="flex justify-between items-center header-container">
+        <div className="kebawah-dikit">
+          <Header category="Page" title="Data Pelajaran" />
+        </div>
+        <div className="flex flex-col sm:flex-row items-center search-container">
+          <button
+            onClick={handleTambah}
+            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700 mt-2 sm:mt-0"
+          >
+            Tambah Data
+          </button>
+        </div>
+      </div>
       <table className="min-w-full leading-normal">
         <thead>
           <tr>
@@ -49,26 +97,41 @@ const ListPelajaran = () => {
           </tr>
         </thead>
         <tbody>
-          {pelajaranData.map((pelajaran) => (
-            <tr key={pelajaran.id}>
+          {pelajaran.map((item) => (
+            <tr key={item.id}>
               <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm dark:text-white dark:bg-secondary-dark-bg">
-                {pelajaran.id}
+                {item.id}
               </td>
               <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm dark:text-white dark:bg-secondary-dark-bg">
-                {pelajaran.nama}
+                {item.pelajaran}
               </td>
               <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm dark:text-white dark:bg-secondary-dark-bg">
-                {pelajaran.kelas}
+                {item.kelas ? item.kelas.kelas : "N/A"}
               </td>
               <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm dark:text-white dark:bg-secondary-dark-bg">
-                <button type="button">button</button>
+                <div className="flex items-center space-x-2">
+                  <button
+                    type="button"
+                    className="text-blue-500 hover:text-blue-700"
+                    onClick={() => handleEdit(item.id)}
+                  >
+                    <FaEdit />
+                  </button>
+                  <button
+                    type="button"
+                    className="text-red-500 hover:text-red-700"
+                    onClick={() => handleDeletePelajaran(item.id)}
+                  >
+                    <FaTrash />
+                  </button>
+                </div>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
     </div>
-  )
-}
+  );
+};
 
-export default ListPelajaran
+export default ListPelajaran;

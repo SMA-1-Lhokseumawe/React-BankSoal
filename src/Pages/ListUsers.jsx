@@ -6,8 +6,10 @@ import { getMe } from "../features/authSlice";
 
 import { Header } from "../components";
 
-const ListGuru = () => {
-  const [guru, setGuru] = useState([]);
+import { FaEdit, FaTrash } from "react-icons/fa";
+
+const ListUsers = () => {
+  const [users, setUsers] = useState([]);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -20,71 +22,61 @@ const ListGuru = () => {
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     if (token) {
-      getGuru();
+      getUsers();
     } else {
       navigate("/");
     }
   }, [navigate]);
 
-  const getGuru = async () => {
+  const getUsers = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/guru");
-      setGuru(response.data);
+      const token = localStorage.getItem("accessToken");
+      const response = await axios.get("http://localhost:5000/users", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setUsers(response.data);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
 
-  const formatTanggal = (tanggal) => {
-    const options = { year: "numeric", month: "long", day: "numeric" };
-    const date = new Date(tanggal);
-    return date.toLocaleDateString("id-ID", options);
+  const handleEdit = (id) => {
+    navigate(`/users/${id}`);
   };
 
-  const calculateAge = (tanggalLahir) => {
-    const birthDate = new Date(tanggalLahir);
-    const currentDate = new Date();
-
-    let age = currentDate.getFullYear() - birthDate.getFullYear();
-    const monthDifference = currentDate.getMonth() - birthDate.getMonth();
-
-    // Jika bulan saat ini kurang dari bulan lahir, kurangi 1 tahun
-    if (
-      monthDifference < 0 ||
-      (monthDifference === 0 && currentDate.getDate() < birthDate.getDate())
-    ) {
-      age--;
-    }
-
-    return age;
+  const handleDelete = async (userId) => {
+    const token = localStorage.getItem("accessToken");
+    await axios.delete(`http://localhost:5000/users/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    getUsers();
   };
 
   return (
     <div className="m-2 md:m-10 p-2 md:p-10 bg-white dark:text-white dark:bg-secondary-dark-bg rounded-3xl border border-gray-300">
-      <Header category="Page" title="Data Guru" />
+      <div className="flex justify-between items-center header-container">
+        <div className="kebawah-dikit">
+          <Header category="Page" title="Data Pelajaran" />
+        </div>
+      </div>
       <table className="min-w-full leading-normal">
         <thead>
           <tr>
             <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider dark:text-white dark:bg-secondary-dark-bg">
-              Nip
+              No.
             </th>
             <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider dark:text-white dark:bg-secondary-dark-bg">
-              Nama
+              Username
             </th>
             <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider dark:text-white dark:bg-secondary-dark-bg">
               Email
             </th>
             <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider dark:text-white dark:bg-secondary-dark-bg">
-              Jenis Kelamin
-            </th>
-            <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider dark:text-white dark:bg-secondary-dark-bg">
-              Tanggal Lahir
-            </th>
-            <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider dark:text-white dark:bg-secondary-dark-bg">
-              Umur
-            </th>
-            <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider dark:text-white dark:bg-secondary-dark-bg">
-              Alamat
+              Role
             </th>
             <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider dark:text-white dark:bg-secondary-dark-bg">
               Action
@@ -92,31 +84,37 @@ const ListGuru = () => {
           </tr>
         </thead>
         <tbody>
-          {guru.map((guru) => (
-            <tr key={guru.id}>
+          {users.map((item, index) => (
+            <tr key={item.uuid}>
               <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm dark:text-white dark:bg-secondary-dark-bg">
-                {guru.nip}
+                {index + 1}
               </td>
               <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm dark:text-white dark:bg-secondary-dark-bg">
-                {guru.nama}
+                {item.username}
               </td>
               <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm dark:text-white dark:bg-secondary-dark-bg">
-                {guru.email}
+                {item.email}
               </td>
               <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm dark:text-white dark:bg-secondary-dark-bg">
-                {guru.gender}
+                {item.role}
               </td>
               <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm dark:text-white dark:bg-secondary-dark-bg">
-                {formatTanggal(guru.ttl)}
-              </td>
-              <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm dark:text-white dark:bg-secondary-dark-bg">
-                {calculateAge(guru.ttl)}
-              </td>
-              <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm dark:text-white dark:bg-secondary-dark-bg">
-                {guru.alamat}
-              </td>
-              <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm dark:text-white dark:bg-secondary-dark-bg">
-                <button>button</button>
+                <div className="flex items-center space-x-2">
+                  <button
+                    type="button"
+                    className="text-blue-500 hover:text-blue-700"
+                    onClick={() => handleEdit(item.uuid)}
+                  >
+                    <FaEdit />
+                  </button>
+                  <button
+                    type="button"
+                    className="text-red-500 hover:text-red-700"
+                    onClick={() => handleDelete(item.uuid)}
+                  >
+                    <FaTrash />
+                  </button>
+                </div>
               </td>
             </tr>
           ))}
@@ -126,4 +124,4 @@ const ListGuru = () => {
   );
 };
 
-export default ListGuru;
+export default ListUsers;

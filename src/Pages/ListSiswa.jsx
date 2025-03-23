@@ -10,31 +10,30 @@ const ListSiswa = () => {
   const [siswa, setSiswa] = useState([]);
 
   const dispatch = useDispatch();
-      const navigate = useNavigate();
-      const { isError } = useSelector((state) => state.auth);
-    
-      useEffect(() => {
-        dispatch(getMe());
-      }, [dispatch]);
-    
-      useEffect(() => {
-        if (isError) {
-          navigate("/");
-        }
-      }, [isError, navigate]);
+  const navigate = useNavigate();
+  const { isError } = useSelector((state) => state.auth);
 
-      useEffect(() => {
-        getSiswa();
-      }, []);
+  useEffect(() => {
+    dispatch(getMe());
+  }, [dispatch]);
 
-      const getSiswa = async () => {
-        try {
-          const response = await axios.get("http://localhost:5000/siswa");
-          setSiswa(response.data);
-        } catch (error) {
-          console.error("Error fetching data:", error);
-        }
-      };
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      getSiswa();
+    } else {
+      navigate("/");
+    }
+  }, [navigate]);
+
+  const getSiswa = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/siswa");
+      setSiswa(response.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
   return (
     <div className="m-2 md:m-10 p-2 md:p-10 bg-white dark:text-white dark:bg-secondary-dark-bg rounded-3xl border border-gray-300">

@@ -1,18 +1,16 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useDispatch } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { getMe } from "../features/authSlice";
 import { useStateContext } from "../contexts/ContextProvider";
 
-const EditDataSiswa = () => {
-  const [kelasList, setKelasList] = useState([]);
-  const [nis, setNis] = useState("");
+const AddProfileGuru = () => {
+  const [nip, setNip] = useState("");
   const [nama, setNama] = useState("");
   const [email, setEmail] = useState("");
-  const [kelasId, setKelasId] = useState("");
   const [gender, setGender] = useState("");
-  const [umur, setUmur] = useState("");
+  const [tanggalLahir, setTanggalLahir] = useState("");
   const [alamat, setAlamat] = useState("");
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
@@ -20,7 +18,6 @@ const EditDataSiswa = () => {
 
   const { currentColor } = useStateContext();
 
-  const { id } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -31,70 +28,47 @@ const EditDataSiswa = () => {
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     if (token) {
-      getSiswaById();
-      getKelas();
+      console.log("berhasil");
     } else {
-      navigate("/login");
+      navigate("/");
     }
   }, [navigate]);
 
-  const getKelas = async () => {
-    try {
-      const token = localStorage.getItem("accessToken");
-      const response = await axios.get("http://localhost:5000/all-kelas", {
-        headers: {
-          Authorization: `Bearer ${token}`, // Add token to headers
-        },
-      });
-      setKelasList(response.data);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
-
-  const getSiswaById = async () => {
-    const token = localStorage.getItem("accessToken");
-    const response = await axios.get(`http://localhost:5000/siswa/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    setNis(response.data.nis);
-    setNama(response.data.nama);
-    setEmail(response.data.email);
-    setKelasId(response.data.kelasId);
-    setGender(response.data.gender);
-    setUmur(response.data.umur);
-    setAlamat(response.data.alamat);
-    setPreview(response.data.url);
-  };
-
-  const updateSiswa = async (e) => {
+  const saveGuru = async (e) => {
     e.preventDefault();
     const formData = new FormData();
-    formData.append("nis", nis);
+    formData.append("nip", nip);
     formData.append("nama", nama);
     formData.append("email", email);
-    formData.append("kelasId", kelasId);
     formData.append("gender", gender);
-    formData.append("umur", umur);
+    formData.append("tanggalLahir", tanggalLahir);
     formData.append("alamat", alamat);
+
     if (file) {
       formData.append("file", file);
     }
-    setIsSubmitting(true)
+
     try {
       const token = localStorage.getItem("accessToken");
-      await axios.patch(`http://localhost:5000/siswa/${id}`, formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      setIsSubmitting(false)
-      navigate("/siswa");
+      const response = await axios.post(
+        "http://localhost:5000/guru",
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      console.log(formData);
+
+      console.log("Response dari Server:", response);
+      navigate("/dashboard");
     } catch (error) {
-      console.log(error);
+      console.error(
+        "Error:",
+        error.response ? error.response.data : error.message
+      );
     }
   };
 
@@ -117,21 +91,21 @@ const EditDataSiswa = () => {
           {/* Header */}
           <div className="py-4 px-6" style={{ backgroundColor: currentColor }}>
             <h1 className="text-xl font-bold text-white">
-              Edit Profile Siswa
+              Tambah Profile Guru
             </h1>
           </div>
 
           {/* Form */}
           <div className="p-10">
-            <form onSubmit={updateSiswa} className="space-y-8">
+            <form onSubmit={saveGuru} className="space-y-8">
               <div className="bg-blue-50 dark:bg-gray-700 p-6 rounded-lg">
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                  NIS Siswa
+                  NIP Guru
                 </label>
                 <div className="relative rounded-md shadow-sm">
                   <input
-                    type="text"
-                    name="nis"
+                    type="number"
+                    name="nip"
                     required
                     placeholder="123456789"
                     className="block w-full px-4 py-3 rounded-md border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:outline-none transition duration-150"
@@ -144,12 +118,12 @@ const EditDataSiswa = () => {
                         borderColor: currentColor,
                       },
                     }}
-                    value={nis}
-                    onChange={(e) => setNis(e.target.value)}
+                    value={nip}
+                    onChange={(e) => setNip(e.target.value)}
                   />
                 </div>
                 <p className="mt-2 text-sm text-gray-500 dark:text-gray-300">
-                  Masukkan NIS Siswa
+                  Masukkan NIP guru
                 </p>
 
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2 mt-5">
@@ -206,38 +180,6 @@ const EditDataSiswa = () => {
                   Masukkan email anda
                 </p>
 
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2 mt-5">
-                  Pilih Kelas Anda
-                </label>
-                <div className="relative rounded-md shadow-sm">
-                  <select
-                    name="kelasId"
-                    required
-                    className="block w-full px-4 py-3 rounded-md border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:outline-none transition duration-150"
-                    style={{
-                      boxShadow: `0 0 0 1px ${currentColor}`,
-                      borderColor: currentColor,
-                      focus: {
-                        outline: "none",
-                        boxShadow: `0 0 0 2px ${currentColor}`,
-                        borderColor: currentColor,
-                      },
-                    }}
-                    value={kelasId}
-                    onChange={(e) => setKelasId(e.target.value)}
-                  >
-                    <option value="">Pilih Kelas</option>
-                    {kelasList.map((kelas) => (
-                      <option key={kelas.id} value={kelas.id}>
-                        {kelas.kelas}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <p className="mt-2 text-sm text-gray-500 dark:text-gray-300">
-                  Pilih kelas untuk pelajaran ini
-                </p>
-
                 {/* Replace the current Jenis Kelamin input field with this code */}
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2 mt-5">
                   Pilih Jenis Kelamin
@@ -288,14 +230,13 @@ const EditDataSiswa = () => {
                 </div>
 
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2 mt-5">
-                  Umur
+                  Tanggal Lahir
                 </label>
                 <div className="relative rounded-md shadow-sm">
                   <input
-                    type="number"
-                    name="umur"
+                    type="date"
+                    name="tanggalLahir"
                     required
-                    placeholder="15, 16, 17"
                     className="block w-full px-4 py-3 rounded-md border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:outline-none transition duration-150"
                     style={{
                       boxShadow: `0 0 0 1px ${currentColor}`,
@@ -306,12 +247,12 @@ const EditDataSiswa = () => {
                         borderColor: currentColor,
                       },
                     }}
-                    value={umur}
-                    onChange={(e) => setUmur(e.target.value)}
+                    value={tanggalLahir}
+                    onChange={(e) => setTanggalLahir(e.target.value)}
                   />
                 </div>
                 <p className="mt-2 text-sm text-gray-500 dark:text-gray-300">
-                  Masukkan umur anda
+                  Pilih tanggal lahir
                 </p>
 
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2 mt-5">
@@ -477,7 +418,7 @@ const EditDataSiswa = () => {
             </div>
             <div className="ml-3">
               <p className="text-sm text-gray-700 dark:text-white">
-                Perubahan profile siswa akan langsung tercatat dalam sistem.
+                Penambahan profile guru akan langsung tercatat dalam sistem.
                 Pastikan data yang dimasukkan sudah benar.
               </p>
             </div>
@@ -488,4 +429,4 @@ const EditDataSiswa = () => {
   );
 };
 
-export default EditDataSiswa;
+export default AddProfileGuru;

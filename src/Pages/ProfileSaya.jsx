@@ -1,382 +1,319 @@
-import React from 'react'
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { getMe } from "../features/authSlice";
+import { useStateContext } from "../contexts/ContextProvider";
 
 const ProfileSaya = () => {
+  const [nis, setNis] = useState("");
+  const [nip, setNip] = useState("");
+  const [username, setUsername] = useState("");
+  const [nama, setNama] = useState("");
+  const [email, setEmail] = useState("");
+  const [kelas, setKelas] = useState("");
+  const [gender, setGender] = useState("");
+  const [umur, setUmur] = useState("");
+  const [tanggalLahir, setTanggalLahir] = useState("");
+  const [alamat, setAlamat] = useState("");
+  const [preview, setPreview] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const { currentColor } = useStateContext();
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { user } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    dispatch(getMe());
+  }, [dispatch]);
+
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      if (user && user.role === "guru") {
+        getProfileGuru();
+      } else if (user && user.role === "siswa") {
+        getProfileSiswa();
+      }
+    } else {
+      navigate("/login");
+    }
+  }, [navigate, user]);
+
+  const formatDateForDisplay = (isoDateString) => {
+    if (!isoDateString) return "";
+    const date = new Date(isoDateString);
+    return date.toLocaleDateString("id-ID", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  };
+
+  const getProfileSiswa = async () => {
+    setIsLoading(true);
+    try {
+      const token = localStorage.getItem("accessToken");
+      const response = await axios.get("http://localhost:5000/profile-siswa", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.data && response.data.data) {
+        const profileData = response.data.data;
+        setNis(profileData.nis);
+        setNama(profileData.nama);
+        setEmail(profileData.email);
+        setKelas(profileData.kelas.kelas);
+        setGender(profileData.gender);
+        setUmur(profileData.umur);
+        setAlamat(profileData.alamat);
+        setPreview(profileData.url);
+
+        // Mengakses username dari nested object 'user'
+        if (profileData.user) {
+          setUsername(profileData.user.username);
+        }
+      } else {
+        console.error("Format data tidak sesuai:", response.data);
+      }
+    } catch (error) {
+      console.error("Error mengambil profile siswa:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const getProfileGuru = async () => {
+    setIsLoading(true);
+    try {
+      const token = localStorage.getItem("accessToken");
+      const response = await axios.get("http://localhost:5000/profile-guru", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.data && response.data.data) {
+        const profileData = response.data.data;
+        setNip(profileData.nip);
+        setNama(profileData.nama);
+        setEmail(profileData.email);
+        setGender(profileData.gender);
+        setTanggalLahir(profileData.tanggalLahir);
+        setAlamat(profileData.alamat);
+        setPreview(profileData.url);
+
+        if (profileData.user) {
+          setUsername(profileData.user.username);
+        }
+      } else {
+        console.error("Format data tidak sesuai:", response.data);
+      }
+    } catch (error) {
+      console.error("Error mengambil profile guru:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Fungsi untuk mendapatkan inisial dari nama untuk avatar fallback
+  const getInitials = (name) => {
+    if (!name) return "U";
+    const names = name.split(" ");
+    if (names.length === 1) return names[0].charAt(0).toUpperCase();
+    return (names[0].charAt(0) + names[names.length - 1].charAt(0)).toUpperCase();
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800">
+        <div className="text-center">
+          <div 
+            className="w-12 h-12 rounded-full border-4 border-t-transparent border-opacity-50 animate-spin mx-auto"
+            style={{ borderColor: `${currentColor} transparent ${currentColor} ${currentColor}` }}
+          ></div>
+          <p className="mt-4 text-gray-600 dark:text-gray-300">Memuat profil...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b mt-5 from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-full mx-auto">
-        <div className="bg-white dark:bg-secondary-dark-bg rounded-xl shadow-lg overflow-hidden mx-8">
-          {/* Header */}
-          <div className="py-4 px-6" style={{ backgroundColor: currentColor }}>
-            <h1 className="text-xl font-bold text-white">
-              Tambah Profile Siswa
-            </h1>
+        {/* Profile Header Card */}
+        <div className="bg-white dark:bg-secondary-dark-bg rounded-xl shadow-lg overflow-hidden mb-6">
+          <div 
+            className="h-40 w-full relative"
+            style={{ backgroundColor: currentColor }}
+          >
+            <div className="absolute bottom-0 left-0 w-full h-16 bg-gradient-to-t from-black/30 to-transparent"></div>
           </div>
-
-          {/* Form */}
-          <div className="p-10">
-            <form onSubmit={updateSiswa} className="space-y-8">
-              <div className="bg-blue-50 dark:bg-gray-700 p-6 rounded-lg">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                  NIS Siswa
-                </label>
-                <div className="relative rounded-md shadow-sm">
-                  <input
-                    type="text"
-                    name="nis"
-                    required
-                    placeholder="123456789"
-                    className="block w-full px-4 py-3 rounded-md border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:outline-none transition duration-150"
-                    style={{
-                      boxShadow: `0 0 0 1px ${currentColor}`,
-                      borderColor: currentColor,
-                      focus: {
-                        outline: "none",
-                        boxShadow: `0 0 0 2px ${currentColor}`,
-                        borderColor: currentColor,
-                      },
-                    }}
-                    value={nis}
-                    onChange={(e) => setNis(e.target.value)}
+          
+          <div className="px-4 sm:px-8 pb-6 flex flex-col items-center relative">
+            {/* Edit Profile Button - Positioned in top right with responsive design */}
+            <div className="absolute top-4 right-4 z-10">
+              <button
+                className="px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-white text-xs sm:text-sm font-medium shadow-md flex items-center"
+                style={{ backgroundColor: currentColor }}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 sm:h-4 sm:w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                </svg>
+                <span className="whitespace-nowrap">Edit Profil</span>
+              </button>
+            </div>
+            
+            {/* Profile Avatar - Positioned to overlap the banner */}
+            <div className="absolute -top-16 sm:-top-20 w-full flex justify-center">
+              {preview ? (
+                <div className="w-28 h-28 sm:w-36 sm:h-36 rounded-full border-4 border-white dark:border-gray-800 shadow-lg overflow-hidden">
+                  <img 
+                    src={preview} 
+                    alt={nama} 
+                    className="w-full h-full object-cover"
                   />
                 </div>
-                <p className="mt-2 text-sm text-gray-500 dark:text-gray-300">
-                  Masukkan NIS Siswa
-                </p>
-
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2 mt-5">
-                  Nama Lengkap
-                </label>
-                <div className="relative rounded-md shadow-sm">
-                  <input
-                    type="text"
-                    name="nama"
-                    required
-                    placeholder="John Doe, Jane Doe"
-                    className="block w-full px-4 py-3 rounded-md border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:outline-none transition duration-150"
-                    style={{
-                      boxShadow: `0 0 0 1px ${currentColor}`,
-                      borderColor: currentColor,
-                      focus: {
-                        outline: "none",
-                        boxShadow: `0 0 0 2px ${currentColor}`,
-                        borderColor: currentColor,
-                      },
-                    }}
-                    value={nama}
-                    onChange={(e) => setNama(e.target.value)}
-                  />
-                </div>
-                <p className="mt-2 text-sm text-gray-500 dark:text-gray-300">
-                  Masukkan Nama Lengkap
-                </p>
-
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2 mt-5">
-                  Email
-                </label>
-                <div className="relative rounded-md shadow-sm">
-                  <input
-                    type="text"
-                    name="email"
-                    required
-                    placeholder="nama@sma1lhok.sch.id, nama@gmail.com"
-                    className="block w-full px-4 py-3 rounded-md border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:outline-none transition duration-150"
-                    style={{
-                      boxShadow: `0 0 0 1px ${currentColor}`,
-                      borderColor: currentColor,
-                      focus: {
-                        outline: "none",
-                        boxShadow: `0 0 0 2px ${currentColor}`,
-                        borderColor: currentColor,
-                      },
-                    }}
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                </div>
-                <p className="mt-2 text-sm text-gray-500 dark:text-gray-300">
-                  Masukkan email anda
-                </p>
-
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2 mt-5">
-                  Pilih Kelas Anda
-                </label>
-                <div className="relative rounded-md shadow-sm">
-                  <select
-                    name="kelasId"
-                    required
-                    className="block w-full px-4 py-3 rounded-md border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:outline-none transition duration-150"
-                    style={{
-                      boxShadow: `0 0 0 1px ${currentColor}`,
-                      borderColor: currentColor,
-                      focus: {
-                        outline: "none",
-                        boxShadow: `0 0 0 2px ${currentColor}`,
-                        borderColor: currentColor,
-                      },
-                    }}
-                    value={kelasId}
-                    onChange={(e) => setKelasId(e.target.value)}
-                  >
-                    <option value="">Pilih Kelas</option>
-                    {kelasList.map((kelas) => (
-                      <option key={kelas.id} value={kelas.id}>
-                        {kelas.kelas}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <p className="mt-2 text-sm text-gray-500 dark:text-gray-300">
-                  Pilih kelas untuk pelajaran ini
-                </p>
-
-                {/* Replace the current Jenis Kelamin input field with this code */}
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2 mt-5">
-                  Pilih Jenis Kelamin
-                </label>
-                <div className="mt-2">
-                  <div className="flex items-center space-x-6">
-                    <div className="flex items-center">
-                      <input
-                        id="laki-laki"
-                        name="gender"
-                        type="radio"
-                        value="Laki-laki"
-                        checked={gender === "Laki-laki"}
-                        onChange={(e) => setGender(e.target.value)}
-                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600"
-                        style={{
-                          accentColor: currentColor,
-                        }}
-                      />
-                      <label
-                        htmlFor="laki-laki"
-                        className="ml-2 block text-sm text-gray-700 dark:text-gray-200"
-                      >
-                        Laki-laki
-                      </label>
-                    </div>
-                    <div className="flex items-center">
-                      <input
-                        id="perempuan"
-                        name="gender"
-                        type="radio"
-                        value="Perempuan"
-                        checked={gender === "Perempuan"}
-                        onChange={(e) => setGender(e.target.value)}
-                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600"
-                        style={{
-                          accentColor: currentColor,
-                        }}
-                      />
-                      <label
-                        htmlFor="perempuan"
-                        className="ml-2 block text-sm text-gray-700 dark:text-gray-200"
-                      >
-                        Perempuan
-                      </label>
-                    </div>
-                  </div>
-                </div>
-
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2 mt-5">
-                  Umur
-                </label>
-                <div className="relative rounded-md shadow-sm">
-                  <input
-                    type="number"
-                    name="umur"
-                    required
-                    placeholder="15, 16, 17"
-                    className="block w-full px-4 py-3 rounded-md border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:outline-none transition duration-150"
-                    style={{
-                      boxShadow: `0 0 0 1px ${currentColor}`,
-                      borderColor: currentColor,
-                      focus: {
-                        outline: "none",
-                        boxShadow: `0 0 0 2px ${currentColor}`,
-                        borderColor: currentColor,
-                      },
-                    }}
-                    value={umur}
-                    onChange={(e) => setUmur(e.target.value)}
-                  />
-                </div>
-                <p className="mt-2 text-sm text-gray-500 dark:text-gray-300">
-                  Masukkan umur anda
-                </p>
-
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2 mt-5">
-                  Alamat
-                </label>
-                <div className="relative rounded-md shadow-sm">
-                  <input
-                    type="text"
-                    name="alamat"
-                    required
-                    placeholder="Lhokseumawe, Muara Satu"
-                    className="block w-full px-4 py-3 rounded-md border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:outline-none transition duration-150"
-                    style={{
-                      boxShadow: `0 0 0 1px ${currentColor}`,
-                      borderColor: currentColor,
-                      focus: {
-                        outline: "none",
-                        boxShadow: `0 0 0 2px ${currentColor}`,
-                        borderColor: currentColor,
-                      },
-                    }}
-                    value={alamat}
-                    onChange={(e) => setAlamat(e.target.value)}
-                  />
-                </div>
-                <p className="mt-2 text-sm text-gray-500 dark:text-gray-300">
-                  Masukkan alamat anda
-                </p>
-
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2 mt-5">
-                  Upload Foto Profil
-                </label>
-                <div className="mt-2 flex flex-col space-y-4">
-                  <div className="flex items-center">
-                    <div className="relative">
-                      <input
-                        type="file"
-                        name="file"
-                        id="file"
-                        accept="image/*"
-                        onChange={loadImage}
-                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                      />
-                      <div
-                        className="py-2 px-4 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none cursor-pointer"
-                        style={{
-                          boxShadow: `0 0 0 1px ${currentColor}`,
-                          borderColor: currentColor,
-                        }}
-                      >
-                        Pilih Foto
-                      </div>
-                    </div>
-                    <span className="ml-3 text-sm text-gray-500 dark:text-gray-300">
-                      {file ? file.name : "Belum ada file yang dipilih"}
-                    </span>
-                  </div>
-
-                  {/* Image Preview */}
-                  {preview && (
-                    <div className="mt-4 relative">
-                      <div className="flex justify-start">
-                        <div
-                          className="relative w-40 h-40 rounded-md overflow-hidden border border-gray-300 dark:border-gray-600"
-                          style={{
-                            boxShadow: `0 0 0 1px ${currentColor}`,
-                            borderColor: currentColor,
-                          }}
-                        >
-                          <img
-                            src={preview}
-                            alt="Preview"
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setFile(null);
-                          setPreview(null);
-                        }}
-                        className="absolute top-0 right-0 mt-2 mr-2 p-1 bg-white dark:bg-gray-800 rounded-full shadow-sm border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700"
-                        style={{
-                          color: currentColor,
-                        }}
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-4 w-4"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M6 18L18 6M6 6l12 12"
-                          />
-                        </svg>
-                      </button>
-                    </div>
-                  )}
-                  <p className="mt-2 text-sm text-gray-500 dark:text-gray-300">
-                    Upload foto profil (JPG, PNG, maksimal 5MB)
-                  </p>
-                </div>
-              </div>
-
-              {/* Buttons */}
-              <div className="flex items-center justify-between pt-8 px-6">
-                <button
-                  type="button"
-                  onClick={() => navigate("/pelajaran")}
-                  className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none"
-                  style={{
-                    focus: {
-                      boxShadow: `0 0 0 2px ${currentColor}`,
-                      borderColor: currentColor,
-                    },
-                  }}
+              ) : (
+                <div 
+                  className="w-28 h-28 sm:w-36 sm:h-36 rounded-full border-4 border-white dark:border-gray-800 shadow-lg flex items-center justify-center text-white text-3xl sm:text-4xl font-bold"
+                  style={{ backgroundColor: currentColor }}
                 >
-                  Batal
-                </button>
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className={`px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white focus:outline-none ${
-                    isSubmitting ? "opacity-70 cursor-not-allowed" : ""
-                  }`}
-                  style={{
-                    backgroundColor: currentColor,
-                    hover: { backgroundColor: `${currentColor}dd` },
-                  }}
+                  {getInitials(nama)}
+                </div>
+              )}
+            </div>
+            
+            {/* Profile Info - Below the avatar with proper spacing */}
+            <div className="mt-14 sm:mt-20 text-center w-full">
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-white">{nama}</h1>
+              <p className="text-gray-600 dark:text-gray-300 mt-1 text-base sm:text-lg">@{username}</p>
+              
+              <div className="mt-3 sm:mt-4 flex justify-center gap-2">
+                <span 
+                  className="px-3 py-1 sm:px-4 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium text-white shadow-sm"
+                  style={{ backgroundColor: currentColor }}
                 >
-                  {isSubmitting ? "Menyimpan..." : "Simpan"}
-                </button>
+                  {user && user.role === "guru" ? "Guru" : "Siswa"}
+                </span>
+                {user && user.role === "siswa" && (
+                  <span className="px-3 py-1 sm:px-4 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 shadow-sm">
+                    {kelas}
+                  </span>
+                )}
               </div>
-            </form>
+            </div>
           </div>
         </div>
 
-        {/* Info Card */}
-        <div
-          className="mt-6 bg-white dark:text-white dark:bg-secondary-dark-bg p-6 rounded-lg shadow mx-8"
-          style={{ borderLeft: `4px solid ${currentColor}` }}
-        >
-          <div className="flex">
-            <div className="flex-shrink-0">
-              <svg
-                className="h-5 w-5 dark:text-white dark:bg-secondary-dark-bg"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill={currentColor}
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </div>
-            <div className="ml-3">
-              <p className="text-sm text-gray-700 dark:text-white">
-                Penambahan profile siswa akan langsung tercatat dalam sistem.
-                Pastikan data yang dimasukkan sudah benar.
-              </p>
+        {/* Profile Details */}
+        <div className="bg-white dark:bg-secondary-dark-bg rounded-xl shadow-lg overflow-hidden mb-6">
+          <div className="p-6">
+            <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Informasi Personal</h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Username */}
+              <div>
+                <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Username</h3>
+                <p className="mt-1 text-gray-800 dark:text-white">{username}</p>
+              </div>
+
+              {/* Email */}
+              <div>
+                <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Email</h3>
+                <p className="mt-1 text-gray-800 dark:text-white">{email}</p>
+              </div>
+
+              {/* NIP/NIS */}
+              <div>
+                <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                  {user && user.role === "guru" ? "NIP" : "NIS"}
+                </h3>
+                <p className="mt-1 text-gray-800 dark:text-white">
+                  {user && user.role === "guru" ? nip : nis}
+                </p>
+              </div>
+
+              {/* Gender */}
+              <div>
+                <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Jenis Kelamin</h3>
+                <p className="mt-1 text-gray-800 dark:text-white">{gender}</p>
+              </div>
+
+              {/* Umur/Tanggal Lahir */}
+              <div>
+                <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                  {user && user.role === "guru" ? "Tanggal Lahir" : "Umur"}
+                </h3>
+                <p className="mt-1 text-gray-800 dark:text-white">
+                  {user && user.role === "guru" 
+                    ? formatDateForDisplay(tanggalLahir) 
+                    : `${umur} tahun`}
+                </p>
+              </div>
+
+              {/* Alamat */}
+              <div>
+                <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Alamat</h3>
+                <p className="mt-1 text-gray-800 dark:text-white">{alamat}</p>
+              </div>
             </div>
           </div>
+        </div>
+
+        {/* Additional Information Card */}
+        <div 
+          className="bg-white dark:bg-secondary-dark-bg rounded-xl shadow-lg overflow-hidden mb-6 border-l-4"
+          style={{ borderLeftColor: currentColor }}
+        >
+          <div className="p-6">
+            <div className="flex items-center">
+              <div 
+                className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center"
+                style={{ backgroundColor: `${currentColor}20` }}
+              >
+                <svg 
+                  className="w-6 h-6" 
+                  style={{ fill: currentColor }}
+                  xmlns="http://www.w3.org/2000/svg" 
+                  viewBox="0 0 20 20"
+                >
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div className="ml-4">
+                <h3 className="text-lg font-medium text-gray-800 dark:text-white">Informasi Profil</h3>
+                <p className="mt-1 text-gray-600 dark:text-gray-300">
+                  {user && user.role === "guru"
+                    ? "Ini adalah halaman profil guru Anda. Untuk mengubah profil, silakan klik button `Edit Profile`."
+                    : "Ini adalah halaman profil siswa Anda. Untuk mengubah profil, silakan klik button `Edit Profile`."}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Action Button */}
+        <div className="flex justify-center mb-6">
+          <button
+            onClick={() => navigate("/dashboard")}
+            className="px-6 py-3 rounded-lg shadow-md transition duration-300 ease-in-out text-white font-medium focus:outline-none focus:ring-2 focus:ring-offset-2"
+            style={{ 
+              backgroundColor: currentColor,
+              boxShadow: `0 4px 14px 0 ${currentColor}40`,
+              focus: {
+                ringColor: currentColor,
+              }
+            }}
+          >
+            Kembali ke Dashboard
+          </button>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ProfileSaya
+export default ProfileSaya;

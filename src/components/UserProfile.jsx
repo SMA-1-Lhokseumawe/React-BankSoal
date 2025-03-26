@@ -3,13 +3,15 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { LogOut, reset } from "../features/authSlice";
 
-import { MdOutlineCancel } from 'react-icons/md';
+import { MdOutlineCancel } from "react-icons/md";
 import { AiOutlineLogout } from "react-icons/ai";
+import { FiCreditCard } from "react-icons/fi";
+import { BsFillPersonFill } from "react-icons/bs";
 
-import { Button } from '.';
-import { userProfileData } from '../data/dummy';
-import { useStateContext } from '../contexts/ContextProvider';
-import avatar from '../data/avatar.jpg';
+import { Button } from ".";
+import { userProfileData } from "../data/dummy";
+import { useStateContext } from "../contexts/ContextProvider";
+import avatar from "../data/avatar.jpg";
 
 const UserProfile = () => {
   const dispatch = useDispatch();
@@ -53,35 +55,47 @@ const UserProfile = () => {
           alt="user-profile"
         />
         <div>
-          <p className="font-semibold text-xl dark:text-gray-200"> {user ? capitalizeFirstLetter(user.username) : "Admin"}   </p>
-          <p className="text-gray-500 text-sm font-semibold dark:text-gray-400"> {user ? user.email : "Admin"}   </p>
+          <p className="font-semibold text-xl dark:text-gray-200">
+            {" "}
+            {user ? capitalizeFirstLetter(user.username) : "Admin"}{" "}
+          </p>
+          <p className="text-gray-500 text-sm font-semibold dark:text-gray-400">
+            {" "}
+            {user ? user.email : "Admin"}{" "}
+          </p>
         </div>
       </div>
       <div>
-        {userProfileData.map((item, index) => (
-          <div key={index} className="flex gap-5 border-b-1 border-color p-4 hover:bg-light-gray cursor-pointer  dark:hover:bg-[#42464D]">
-            <button
-              type="button"
-              style={{ color: item.iconColor, backgroundColor: item.iconBg }}
-              className=" text-xl rounded-lg p-3 hover:bg-light-gray"
-            >
-              {item.icon}
-            </button>
+        <div className="flex gap-5 border-b-1 border-color p-4 hover:bg-light-gray cursor-pointer  dark:hover:bg-[#42464D]">
+          <button
+            type="button"
+            style={{ color: "#03C9D7", backgroundColor: "#E5FAFB" }}
+            className=" text-xl rounded-lg p-3 hover:bg-light-gray"
+            onClick={() => navigate('/profile-saya')}
+          >
+            <BsFillPersonFill />
+          </button>
 
-            <div>
-              <p className="font-semibold dark:text-gray-200 ">{item.title}</p>
-              <p className="text-gray-500 text-sm dark:text-gray-400"> {item.desc} </p>
-            </div>
+          <div>
+            <p className="font-semibold dark:text-gray-200 ">My Profile</p>
+            <p className="text-gray-500 text-sm dark:text-gray-400">
+              {" "}
+              Account Settings{" "}
+            </p>
           </div>
-        ))}
+        </div>
       </div>
       <div className="mt-5">
         <Button
-          onClick={logout} color="white" bgColor={currentColor} borderRadius="10px" icon={<AiOutlineLogout />} text='Keluar'
+          onClick={logout}
+          color="white"
+          bgColor={currentColor}
+          borderRadius="10px"
+          icon={<AiOutlineLogout />}
+          text="Keluar"
         />
       </div>
     </div>
-
   );
 };
 

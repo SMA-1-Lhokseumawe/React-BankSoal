@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { getMe } from "../features/authSlice";
 
 import { Header } from "../components";
+
+import { FaEdit, FaTrash } from "react-icons/fa";
 
 const ListGuru = () => {
   const [guru, setGuru] = useState([]);
@@ -12,7 +14,6 @@ const ListGuru = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { isError } = useSelector((state) => state.auth);
 
   useEffect(() => {
     dispatch(getMe());
@@ -30,7 +31,12 @@ const ListGuru = () => {
   const getGuru = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("http://localhost:5000/guru");
+      const token = localStorage.getItem("accessToken");
+      const response = await axios.get("http://localhost:5000/guru", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setGuru(response.data);
       setLoading(false);
     } catch (error) {
@@ -45,22 +51,18 @@ const ListGuru = () => {
     return date.toLocaleDateString("id-ID", options);
   };
 
-  const calculateAge = (tanggalLahir) => {
-    const birthDate = new Date(tanggalLahir);
-    const currentDate = new Date();
+  const handleEdit = (id) => {
+    navigate(`/guru/${id}`);
+  };
 
-    let age = currentDate.getFullYear() - birthDate.getFullYear();
-    const monthDifference = currentDate.getMonth() - birthDate.getMonth();
-
-    // Jika bulan saat ini kurang dari bulan lahir, kurangi 1 tahun
-    if (
-      monthDifference < 0 ||
-      (monthDifference === 0 && currentDate.getDate() < birthDate.getDate())
-    ) {
-      age--;
-    }
-
-    return age;
+  const handleDeleteGuru = async (userId) => {
+    const token = localStorage.getItem("accessToken");
+    await axios.delete(`http://localhost:5000/guru/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    getGuru();
   };
 
   return (
@@ -71,6 +73,9 @@ const ListGuru = () => {
           <tr>
             <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider dark:text-white dark:bg-secondary-dark-bg">
               Nip
+            </th>
+            <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider dark:text-white dark:bg-secondary-dark-bg">
+              Username
             </th>
             <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider dark:text-white dark:bg-secondary-dark-bg">
               Nama
@@ -85,10 +90,10 @@ const ListGuru = () => {
               Tanggal Lahir
             </th>
             <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider dark:text-white dark:bg-secondary-dark-bg">
-              Umur
+              Alamat
             </th>
             <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider dark:text-white dark:bg-secondary-dark-bg">
-              Alamat
+              Foto
             </th>
             <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider dark:text-white dark:bg-secondary-dark-bg">
               Action
@@ -96,7 +101,7 @@ const ListGuru = () => {
           </tr>
         </thead>
         <tbody>
-        {loading ? (
+          {loading ? (
             <tr>
               <td
                 colSpan="8"
@@ -107,56 +112,119 @@ const ListGuru = () => {
             </tr>
           ) : guru.length > 0 ? (
             guru.map((guru) => (
-            <tr key={guru.id}>
-              <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm dark:text-white dark:bg-secondary-dark-bg">
-                {guru.nip}
-              </td>
-              <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm dark:text-white dark:bg-secondary-dark-bg">
-                {guru.nama}
-              </td>
-              <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm dark:text-white dark:bg-secondary-dark-bg">
-                {guru.email}
-              </td>
-              <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm dark:text-white dark:bg-secondary-dark-bg">
-                {guru.gender}
-              </td>
-              <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm dark:text-white dark:bg-secondary-dark-bg">
-                {formatTanggal(guru.ttl)}
-              </td>
-              <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm dark:text-white dark:bg-secondary-dark-bg">
-                {calculateAge(guru.ttl)}
-              </td>
-              <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm dark:text-white dark:bg-secondary-dark-bg">
-                {guru.alamat}
-              </td>
-              <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm dark:text-white dark:bg-secondary-dark-bg">
-                <button>button</button>
+              <tr key={guru.id}>
+                <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm dark:text-white dark:bg-secondary-dark-bg">
+                  {guru.nip}
+                </td>
+                <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm dark:text-white dark:bg-secondary-dark-bg">
+                  {guru.user ? guru.user.username : "-"}
+                </td>
+                <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm dark:text-white dark:bg-secondary-dark-bg">
+                  {guru.nama}
+                </td>
+                <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm dark:text-white dark:bg-secondary-dark-bg">
+                  {guru.email}
+                </td>
+                <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm dark:text-white dark:bg-secondary-dark-bg">
+                  {guru.gender}
+                </td>
+                <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm dark:text-white dark:bg-secondary-dark-bg">
+                  {formatTanggal(guru.tanggalLahir)}
+                </td>
+                <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm dark:text-white dark:bg-secondary-dark-bg">
+                  {guru.alamat}
+                </td>
+                <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm dark:text-white dark:bg-secondary-dark-bg">
+                  {guru.url ? (
+                    <div className="w-12 h-12 relative cursor-pointer group">
+                      <a
+                        href={guru.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block w-full h-full"
+                      >
+                        <img
+                          src={guru.url}
+                          alt={`Foto ${guru.nama}`}
+                          className="w-full h-full object-cover rounded-full transition-all duration-300 group-hover:shadow-lg"
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src =
+                              "https://via.placeholder.com/48?text=No+Image";
+                          }}
+                        />
+                        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-0 rounded-full transition-all duration-300 group-hover:bg-opacity-20">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-6 w-6 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                            />
+                          </svg>
+                        </div>
+                      </a>
+                    </div>
+                  ) : (
+                    <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center">
+                      <span className="text-gray-500">N/A</span>
+                    </div>
+                  )}
+                </td>
+                <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm dark:text-white dark:bg-secondary-dark-bg">
+                  <div className="flex items-center space-x-2">
+                    <button
+                      type="button"
+                      className="text-blue-500 hover:text-blue-700"
+                      onClick={() => handleEdit(guru.id)}
+                    >
+                      <FaEdit />
+                    </button>
+                    <button
+                      type="button"
+                      className="text-red-500 hover:text-red-700"
+                      onClick={() => handleDeleteGuru(guru.id)}
+                    >
+                      <FaTrash />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td
+                colSpan="8"
+                className="px-5 py-10 text-center dark:text-white dark:bg-secondary-dark-bg"
+              >
+                <div className="flex flex-col items-center justify-center">
+                  <svg
+                    className="w-16 h-16 text-gray-400 dark:text-gray-500 mb-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  <p className="text-lg font-medium text-gray-600 dark:text-gray-300">
+                    Tidak ada data Guru
+                  </p>
+                </div>
               </td>
             </tr>
-          ))
-        ) : (
-          <tr>
-            <td colSpan="8" className="px-5 py-10 text-center dark:text-white dark:bg-secondary-dark-bg">
-              <div className="flex flex-col items-center justify-center">
-                <svg 
-                  className="w-16 h-16 text-gray-400 dark:text-gray-500 mb-4" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24" 
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round" 
-                    strokeWidth="2" 
-                    d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                <p className="text-lg font-medium text-gray-600 dark:text-gray-300">Tidak ada data Guru</p>
-              </div>
-            </td>
-          </tr>
-        )}
+          )}
         </tbody>
       </table>
     </div>

@@ -9,6 +9,7 @@ import { Dashboard } from "./Pages";
 import { useStateContext } from "./contexts/ContextProvider";
 
 import "./App.css";
+import ProfileSaya from "./Pages/ProfileSaya";
 import ListSiswa from "./Pages/ListSiswa";
 import ListGuru from "./Pages/ListGuru";
 import ListPelajaran from "./Pages/ListPelajaran";
@@ -17,7 +18,9 @@ import ListUsers from "./Pages/ListUsers";
 import AddKelas from "./Pages/AddKelas";
 import AddPelajaran from "./Pages/AddPelajaran";
 import AddProfileSiswa from "./Pages/AddProfileSiswa";
+import AddProfileGuru from "./Pages/AddProfileGuru";
 import EditDataSiswa from "./Pages/EditDataSiswa";
+import EditDataGuru from "./Pages/EditDataGuru";
 import EditKelas from "./Pages/EditKelas";
 import EditPelajaran from "./Pages/EditPelajaran";
 import EditUsers from "./Pages/EditUsers";
@@ -89,6 +92,7 @@ const AppContent = () => {
               <Route path="/form-discussion" element={<FormDiscussion />} />
               <Route path="/diskusi" element={<Discussion />} />
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/profile-saya" element={<ProfileSaya />} />
               <Route path="/siswa" element={<ListSiswa />} />
               <Route path="/guru" element={<ListGuru />} />
               <Route path="/pelajaran" element={<ListPelajaran />} />
@@ -97,7 +101,9 @@ const AppContent = () => {
               <Route path="/kelas/tambah-kelas" element={<AddKelas />} />
               <Route path="/pelajaran/tambah-pelajaran" element={<AddPelajaran />} />
               <Route path="/add-profile-siswa" element={<AddProfileSiswa />} />
+              <Route path="/add-profile-guru" element={<AddProfileGuru />} />
               <Route path="/siswa/:id" element={<EditDataSiswa />} />
+              <Route path="/guru/:id" element={<EditDataGuru />} />
               <Route path="/kelas/:id" element={<EditKelas />} />
               <Route path="/pelajaran/:id" element={<EditPelajaran />} />
               <Route path="/users/:id" element={<EditUsers />} />

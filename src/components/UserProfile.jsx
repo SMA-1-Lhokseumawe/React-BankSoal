@@ -16,7 +16,11 @@ const UserProfile = () => {
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
 
-  const { currentColor } = useStateContext();
+  const { currentColor, setIsClicked, initialState } = useStateContext();
+
+  const handleClose = () => {
+    setIsClicked(initialState);
+  };
 
   const logout = async () => {
     await dispatch(LogOut());
@@ -39,6 +43,7 @@ const UserProfile = () => {
           bgHoverColor="light-gray"
           size="2xl"
           borderRadius="50%"
+          onClick={handleClose}
         />
       </div>
       <div className="flex gap-5 items-center mt-6 border-color border-b-1 pb-6">

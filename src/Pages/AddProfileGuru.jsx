@@ -36,6 +36,7 @@ const AddProfileGuru = () => {
 
   const saveGuru = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
     const formData = new FormData();
     formData.append("nip", nip);
     formData.append("nama", nama);

@@ -104,7 +104,7 @@ const ListGuru = () => {
           {loading ? (
             <tr>
               <td
-                colSpan="8"
+                colSpan="9"
                 className="px-5 py-10 text-center text-sm text-gray-500 dark:text-gray-400"
               >
                 Loading...
@@ -200,7 +200,7 @@ const ListGuru = () => {
           ) : (
             <tr>
               <td
-                colSpan="8"
+                colSpan="9"
                 className="px-5 py-10 text-center dark:text-white dark:bg-secondary-dark-bg"
               >
                 <div className="flex flex-col items-center justify-center">

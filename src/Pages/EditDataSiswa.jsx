@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { getMe } from "../features/authSlice";
 import { useStateContext } from "../contexts/ContextProvider";
@@ -23,6 +23,7 @@ const EditDataSiswa = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { user } = useSelector((state) => state.auth);
 
   useEffect(() => {
     dispatch(getMe());
@@ -92,7 +93,13 @@ const EditDataSiswa = () => {
         },
       });
       setIsSubmitting(false)
-      navigate("/siswa");
+      
+      if (user && (user.role === "admin" || user.role === "guru")) {
+        navigate("/siswa");
+      } else if (user && user.role === "siswa") {
+        navigate("/profile-saya");
+      }
+      
     } catch (error) {
       console.log(error);
     }

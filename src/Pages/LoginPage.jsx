@@ -116,7 +116,7 @@ const LoginPage = () => {
                   </div>
 
                   <div className="text-sm">
-                    <a href="#" className="text-orange-600 hover:underline font-semibold">
+                    <a href="#" className="text-orange-600 hover:underline font-semibold" onClick={() => navigate('/forget-password')}>
                       Forgot your password?
                     </a>
                   </div>

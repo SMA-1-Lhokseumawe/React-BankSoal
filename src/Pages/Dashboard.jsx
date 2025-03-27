@@ -151,6 +151,7 @@ const Dashboard = () => {
     },
   };
 
+  const [gayaBelajar, setGayaBelajar] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [redirectPath, setRedirectPath] = useState("");
@@ -206,6 +207,12 @@ const Dashboard = () => {
         },
       });
 
+      if (response.data.data.gayaBelajar === null) {
+        setGayaBelajar(null);
+      } else {
+        setGayaBelajar(response.data.data.gayaBelajar);
+      }
+
       if (response.data && response.data.status) {
         console.log("berhasil");
       } else {
@@ -238,7 +245,6 @@ const Dashboard = () => {
 
       if (response.data && response.data.status) {
         console.log("berhasil");
-        
       } else {
         // Show modal for missing profile
         showProfileModal(
@@ -259,13 +265,27 @@ const Dashboard = () => {
   };
 
   const logout = async () => {
-      await dispatch(LogOut());
-      dispatch(reset());
-      navigate("/");
-    };
+    await dispatch(LogOut());
+    dispatch(reset());
+    navigate("/");
+  };
 
   return (
     <div className="mt-5">
+      {user && user.role === "siswa" && gayaBelajar === null && (
+        <div
+          className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4"
+          role="alert"
+        >
+          <p className="font-bold">Perhatian!</p>
+          <p>
+            Anda belum mengisi kuesioner untuk menentukan gaya belajar Anda.{" "}
+            <a href="/link-kuesioner" className="text-blue-500 underline">
+              Silakan klik di sini untuk mengisi kuesioner.
+            </a>
+          </p>
+        </div>
+      )}
       <div className="flex flex-wrap lg:flex-nowrap justify-center">
         <div className="flex m-3 flex-wrap justify-center gap-4 items-center">
           {earningData.map((item) => (

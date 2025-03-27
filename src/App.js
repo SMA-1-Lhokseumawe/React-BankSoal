@@ -25,8 +25,11 @@ import EditKelas from "./Pages/EditKelas";
 import EditPelajaran from "./Pages/EditPelajaran";
 import EditUsers from "./Pages/EditUsers";
 import GantiPassword from "./Pages/GantiPassword";
+import ListModulBelajar from "./Pages/ModulBelajar/ListModulBelajar";
 import Homepage from "./Pages/Homepages/homepage";
 import LoginPage from "./Pages/LoginPage";
+import ForgetPassword from "./Pages/ForgetPassword/ForgetPassword";
+import ResetPassword from "./Pages/ForgetPassword/ResetPassword";
 import FormDiscussion from "./Pages/Discussion/FormDiscussion";
 import Discussion from "./Pages/Discussion";
 
@@ -35,14 +38,15 @@ const AppContent = () => {
   const location = useLocation(); // Mendapatkan informasi lokasi saat ini
   const isHomepage = location.pathname === "/";
   const isLoginPage = location.pathname === "/login";
+  const isForgetPassword = location.pathname === "/forget-password";
+  const isResetPassword = location.pathname.startsWith("/reset-password/");
   const isFormDiscussion = location.pathname === "/form-discussion";
-
 
   return (
     <div className={currentMode === 'Dark' ? 'dark' : ''}>
       <div className="flex relative dark:bg-main-dark-bg">
         {/* Tombol Settings dengan Tooltip */}
-        {!isHomepage && !isLoginPage && !isFormDiscussion && (
+        {!isHomepage && !isLoginPage && !isForgetPassword && !isResetPassword && !isFormDiscussion && (
           <div className="fixed right-4 bottom-4" style={{ zIndex: "1000" }}>
             <button
               type="button"
@@ -60,11 +64,11 @@ const AppContent = () => {
         )}
 
         {/* Sidebar */}
-        {!isHomepage && !isLoginPage && !isFormDiscussion && activeMenu ? (
+        {!isHomepage && !isLoginPage && !isForgetPassword && !isResetPassword && !isFormDiscussion && activeMenu ? (
           <div className="w-72 fixed sidebar dark:bg-secondary-dark-bg bg-white">
             <Sidebar />
           </div>
-        ) : !isHomepage && !isLoginPage && !isFormDiscussion ? (
+        ) : !isHomepage && !isLoginPage && !isForgetPassword && !isResetPassword && !isFormDiscussion ? (
           <div className="w-0 dark:bg-secondary-dark-bg">
             <Sidebar />
           </div>
@@ -73,10 +77,10 @@ const AppContent = () => {
         {/* Main Content */}
         <div
           className={`dark:bg-main-dark-bg bg-main-bg min-h-screen w-full ${
-            activeMenu && !isHomepage && !isLoginPage && !isFormDiscussion ? "md:ml-72" : "flex-2"
+            activeMenu && !isHomepage && !isLoginPage && !isForgetPassword && !isResetPassword && !isFormDiscussion ? "md:ml-72" : "flex-2"
           }`}
         >
-          {!isHomepage && !isLoginPage && !isFormDiscussion && (
+          {!isHomepage && !isLoginPage && !isForgetPassword && !isResetPassword && !isFormDiscussion && (
             <div className="fixed md:static bg-main-bg dark:bg-main-dark-bg navbar w-full">
               <Navbar />
             </div>
@@ -89,6 +93,8 @@ const AppContent = () => {
               {/* Dashboard Routes */}
               <Route path="/" element={<Homepage />} />
               <Route path="/login" element={<LoginPage />} />
+              <Route path="/forget-password" element={<ForgetPassword />} />
+              <Route path="/reset-password/:token" element={<ResetPassword />} />
               <Route path="/form-discussion" element={<FormDiscussion />} />
               <Route path="/diskusi" element={<Discussion />} />
               <Route path="/dashboard" element={<Dashboard />} />
@@ -108,10 +114,11 @@ const AppContent = () => {
               <Route path="/pelajaran/:id" element={<EditPelajaran />} />
               <Route path="/users/:id" element={<EditUsers />} />
               <Route path="/ganti-password" element={<GantiPassword />} />
+              <Route path="/modul-belajar" element={<ListModulBelajar />} />
             </Routes>
           </div>
 
-          {!isHomepage && !isLoginPage && !isFormDiscussion && <Footer />}
+          {!isHomepage && !isLoginPage && !isForgetPassword && !isResetPassword && !isFormDiscussion && <Footer />}
         </div>
       </div>
     </div>

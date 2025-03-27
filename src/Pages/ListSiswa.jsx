@@ -97,7 +97,7 @@ const ListSiswa = () => {
           {loading ? (
             <tr>
               <td
-                colSpan="8"
+                colSpan="10"
                 className="px-5 py-10 text-center text-sm text-gray-500 dark:text-gray-400"
               >
                 Loading...
@@ -196,7 +196,7 @@ const ListSiswa = () => {
           ) : (
             <tr>
               <td
-                colSpan="8"
+                colSpan="10"
                 className="px-5 py-10 text-center dark:text-white dark:bg-secondary-dark-bg"
               >
                 <div className="flex flex-col items-center justify-center">

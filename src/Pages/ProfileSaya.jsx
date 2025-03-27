@@ -6,6 +6,8 @@ import { getMe } from "../features/authSlice";
 import { useStateContext } from "../contexts/ContextProvider";
 
 const ProfileSaya = () => {
+  const [siswaId, setSiswaId] = useState("");
+  const [guruId, setGuruId] = useState("");
   const [nis, setNis] = useState("");
   const [nip, setNip] = useState("");
   const [username, setUsername] = useState("");
@@ -63,6 +65,7 @@ const ProfileSaya = () => {
       });
       if (response.data && response.data.data) {
         const profileData = response.data.data;
+        setSiswaId(profileData.id);
         setNis(profileData.nis);
         setNama(profileData.nama);
         setEmail(profileData.email);
@@ -97,6 +100,7 @@ const ProfileSaya = () => {
       });
       if (response.data && response.data.data) {
         const profileData = response.data.data;
+        setGuruId(profileData.id);
         setNip(profileData.nip);
         setNama(profileData.nama);
         setEmail(profileData.email);
@@ -158,6 +162,13 @@ const ProfileSaya = () => {
               <button
                 className="px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-white text-xs sm:text-sm font-medium shadow-md flex items-center"
                 style={{ backgroundColor: currentColor }}
+                onClick={() => {
+                  if (user && user.role === "guru") {
+                    navigate(`/guru/${guruId}`);
+                  } else if (user && user.role === "siswa") {
+                    navigate(`/siswa/${siswaId}`);
+                  }
+                }}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 sm:h-4 sm:w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />

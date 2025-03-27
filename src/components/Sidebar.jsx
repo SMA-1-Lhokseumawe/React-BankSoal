@@ -56,16 +56,10 @@ const Sidebar = () => {
           allowedRoles: ['admin', 'guru'], // Admin and guru can access kelas
         },
         {
-          name: 'ujian',
-          displayName: 'ujian',
-          icon: <BsBook />,
-          allowedRoles: ['admin', 'guru'], // Admin and guru can access ujian
-        },
-        {
-          name: 'soal',
-          displayName: 'soal',
+          name: 'quiz',
+          displayName: 'quiz',
           icon: <BsPencilSquare />,
-          allowedRoles: ['admin', 'guru'], // Admin and guru can access soal
+          allowedRoles: ['siswa'], // Admin and guru can access soal
         },
         {
           name: 'nilai',

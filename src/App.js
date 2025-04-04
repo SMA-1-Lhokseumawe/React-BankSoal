@@ -32,6 +32,9 @@ import ForgetPassword from "./Pages/ForgetPassword/ForgetPassword";
 import ResetPassword from "./Pages/ForgetPassword/ResetPassword";
 import FormDiscussion from "./Pages/Discussion/FormDiscussion";
 import Discussion from "./Pages/Discussion";
+import AddModulBelajar from "./Pages/ModulBelajar/AddModulBelajar";
+import AddSubModulBelajar from "./Pages/ModulBelajar/AddSubModulBelajar";
+import ListSubModulBelajar from "./Pages/ModulBelajar/ListSubModulBelajar";
 
 const AppContent = () => {
   const { activeMenu, themeSettings, setThemeSettings, currentColor, currentMode } = useStateContext();
@@ -115,6 +118,9 @@ const AppContent = () => {
               <Route path="/users/:id" element={<EditUsers />} />
               <Route path="/ganti-password" element={<GantiPassword />} />
               <Route path="/modul-belajar" element={<ListModulBelajar />} />
+              <Route path="/list-sub-modul-belajar" element={<ListSubModulBelajar />} />
+              <Route path="/add-modul-belajar" element={<AddModulBelajar />} />
+              <Route path="/add-sub-modul-belajar" element={<AddSubModulBelajar />} />
             </Routes>
           </div>
 

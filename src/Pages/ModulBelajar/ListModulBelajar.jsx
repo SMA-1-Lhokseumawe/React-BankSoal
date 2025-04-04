@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useStateContext } from "../../contexts/ContextProvider";
-import { FiClock, FiBook, FiAward, FiPlus, FiEye, FiHeadphones, FiActivity } from 'react-icons/fi';
+import { FiClock, FiBook, FiAward, FiPlus, FiEye, FiHeadphones, FiActivity, FiFilter } from 'react-icons/fi';
 
 const ListModulBelajar = () => {
   const modulData = [
@@ -21,6 +22,23 @@ const ListModulBelajar = () => {
       typeGayaBelajar: "Auditori"
     },
     {
+      judul: "Belajar Membuat Aplikasi Android",
+      deskripsi: "Modul ini membahas tentang pengembangan aplikasi Android dasar menggunakan Android Studio dan Kotlin.",
+      jamBelajar: 70,
+      kelas: "11",
+      pelajaran: "Pemrograman Mobile",
+      typeGayaBelajar: "Auditori"
+    },
+    {
+      judul: "Belajar Membuat Aplikasi Android",
+      deskripsi: "Modul ini membahas tentang pengembangan aplikasi Android dasar menggunakan Android Studio dan Kotlin.",
+      jamBelajar: 70,
+      kelas: "11",
+      pelajaran: "Pemrograman Mobile",
+      typeGayaBelajar: "Auditori"
+    },
+    
+    {
       judul: "Menjadi Android Developer Expert",
       deskripsi: "Modul lanjutan untuk memperdalam kemampuan dalam pengembangan aplikasi Android dengan best practices.",
       jamBelajar: 90,
@@ -30,7 +48,11 @@ const ListModulBelajar = () => {
     }
   ];
 
+  const filters = ["All", "Kelas 10", "Kelas 11", "Kelas 12", "Kinestetik", "Auditori", "Visual"];
+
+  const [activeFilter, setActiveFilter] = useState("All");
   const { currentColor, currentMode } = useStateContext();
+  const navigate = useNavigate();
 
   // Menambahkan styling dinamis berdasarkan currentColor dan mode
   const gradientStyle = {
@@ -55,19 +77,39 @@ const ListModulBelajar = () => {
           <button 
             className="inline-flex items-center px-5 py-2.5 rounded-lg text-white font-medium shadow-sm hover:shadow-md transition-all" 
             style={buttonStyle}
+            onClick={() => navigate('/add-modul-belajar')}
           >
             <FiPlus className="mr-2" />
             Tambah Modul
           </button>
         </div>
       
-      {/* Filter section */}
-      <div className="flex flex-wrap gap-2 mb-6">
-        <button className="px-4 py-2 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 shadow-sm text-sm font-medium">Semua Modul</button>
-        <button className="px-4 py-2 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 shadow-sm text-sm font-medium">Kelas 10</button>
-        <button className="px-4 py-2 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 shadow-sm text-sm font-medium">Kelas 11</button>
-        <button className="px-4 py-2 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 shadow-sm text-sm font-medium">Kelas 12</button>
-      </div>
+      {/* Filters */}
+                <div className="flex mb-6 overflow-x-auto gap-2">
+                  <button className="px-4 py-2 rounded-lg flex items-center shadow-sm"
+                          style={{ backgroundColor: currentColor, color: 'white' }}>
+                    <FiFilter className="mr-2" /> Filter
+                  </button>
+                  
+                  {filters.map((filter) => (
+                    <button 
+                      key={filter}
+                      onClick={() => setActiveFilter(filter)}
+                      className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                        activeFilter === filter
+                          ? currentMode === 'Dark' 
+                            ? 'bg-secondary-dark-bg border-2' 
+                            : 'bg-white border-2'
+                          : currentMode === 'Dark'
+                            ? 'bg-dark-bg border border-gray-700 text-gray-300 hover:bg-secondary-dark-bg'
+                            : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-50'
+                      }`}
+                      style={activeFilter === filter ? { borderColor: currentColor, color: currentColor } : {}}
+                    >
+                      {filter}
+                    </button>
+                  ))}
+                </div>
       
       {/* Cards Grid */}
       <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">

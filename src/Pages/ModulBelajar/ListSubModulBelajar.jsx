@@ -1,41 +1,94 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { useDispatch } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
+import { getMe } from "../../features/authSlice";
 import { useStateContext } from "../../contexts/ContextProvider";
-import { FiPlus } from "react-icons/fi";
+import { FiPlus, FiEdit2, FiTrash2, FiEye } from "react-icons/fi";
 
 const ListSubModulBelajar = () => {
-  const subModulData = [
-    {
-      subJudul: "Belajar Bilangan Phytagoras",
-      subDeskripsi:
-        "Modul ini mengajarkan konsep dasar bilangan Phytagoras dan aplikasinya dalam pemecahan masalah matematika.",
-    },
-    {
-      subJudul: "Belajar Membuat Aplikasi Android",
-      subDeskripsi:
-        "Modul ini membahas tentang pengembangan aplikasi Android dasar menggunakan Android Studio dan Kotlin.",
-    },
-    {
-      subJudul: "Belajar Membuat Aplikasi Android",
-      subDeskripsi:
-        "Modul ini membahas tentang pengembangan aplikasi Android dasar menggunakan Android Studio dan Kotlin.",
-    },
-    {
-      subJudul: "Belajar Membuat Aplikasi Android",
-      subDeskripsi:
-        "Modul ini membahas tentang pengembangan aplikasi Android dasar menggunakan Android Studio dan Kotlin.",
-    },
-
-    {
-      subJudul: "Menjadi Android Developer Expert",
-      subDeskripsi:
-        "Modul lanjutan untuk memperdalam kemampuan dalam pengembangan aplikasi Android dengan best practices.",
-    },
-  ];
-
-  const [activeFilter, setActiveFilter] = useState("All");
+  const [subModul, setSubModul] = useState([]);
+  const [judulModul, setJudulModul] = useState("");
+  const [loading, setLoading] = useState(true);
   const { currentColor, currentMode } = useStateContext();
+
+  const { id } = useParams();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    dispatch(getMe());
+  }, [dispatch]);
+
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      getSubModulByModulId();
+      getModulById();
+    } else {
+      navigate("/");
+    }
+  }, [navigate]);
+
+  const getSubModulByModulId = async () => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("accessToken");
+      const response = await axios.get(
+        `http://localhost:5000/sub-modul-by-modulid/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setSubModul(response.data);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching sub modules:", error);
+      setLoading(false);
+    }
+  };
+
+  const getModulById = async () => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("accessToken");
+      const response = await axios.get(
+        `http://localhost:5000/modul/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setJudulModul(response.data.judul);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching sub modules:", error);
+      setLoading(false);
+    }
+  };
+
+  const handleViewSubModul = (id) => {
+    navigate(`/sub-modul-belajar/view/${id}`);
+  };
+
+  const handleEdit = (id) => {
+    navigate(`/sub-modul-belajar/edit/${id}`);
+  };
+
+  const handleDeleteSubModul = async (userId) => {
+    const token = localStorage.getItem("accessToken");
+    await axios.delete(`http://localhost:5000/sub-modul/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    getSubModulByModulId();
+  };
 
   // Menambahkan styling dinamis berdasarkan currentColor dan mode
   const gradientStyle = {
@@ -54,7 +107,7 @@ const ListSubModulBelajar = () => {
       {/* Header section with gradient background */}
       <div className="rounded-xl p-6 mb-8" style={gradientStyle}>
         <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-2">
-          Daftar Sub Modul Pembelajaran
+          {loading ? "Loading..." : judulModul || "Detail Modul"}
         </h1>
         <p className="text-gray-600 dark:text-gray-300 max-w-2xl">
           Pilih pembelajaran yang mau dibahas
@@ -65,7 +118,7 @@ const ListSubModulBelajar = () => {
         <button
           className="inline-flex items-center px-5 py-2.5 rounded-lg text-white font-medium shadow-sm hover:shadow-md transition-all"
           style={buttonStyle}
-          onClick={() => navigate("/add-modul-belajar")}
+          onClick={() => navigate("/sub-modul-belajar/tambah-sub-modul-belajar", { state: { modulId: id } })}
         >
           <FiPlus className="mr-2" />
           Tambah Sub Modul
@@ -74,7 +127,7 @@ const ListSubModulBelajar = () => {
 
       {/* Cards Grid */}
       <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-        {subModulData.map((modul, index) => {
+        {subModul.map((subModul, index) => {
           return (
             <div
               key={index}
@@ -89,11 +142,45 @@ const ListSubModulBelajar = () => {
               <div className="p-6 flex-grow">
                 {/* Title and description */}
                 <h2 className="text-xl font-bold mb-3 text-gray-800 dark:text-white">
-                  {modul.subJudul}
+                  {subModul.subJudul}
                 </h2>
                 <p className="text-gray-600 dark:text-gray-300 mb-6 text-sm leading-relaxed">
-                  {modul.subDeskripsi}
+                  {subModul.subDeskripsi}
                 </p>
+
+                {/* Card Footer */}
+                <div className="px-6 py-4 bg-gray-50 dark:bg-gray-700 border-t border-gray-100 dark:border-gray-600">
+                  {/* Action Buttons */}
+                  <div className="flex justify-between items-center">
+                    {/* Edit and Delete buttons */}
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => handleEdit(subModul.id)}
+                        className="px-3 py-1.5 bg-amber-500 text-white rounded-lg text-sm font-medium flex items-center transition-all hover:bg-amber-600"
+                      >
+                        <FiEdit2 className="mr-1" />
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDeleteSubModul(subModul.id)}
+                        className="px-3 py-1.5 bg-red-500 text-white rounded-lg text-sm font-medium flex items-center transition-all hover:bg-red-600"
+                      >
+                        <FiTrash2 className="mr-1" />
+                        Hapus
+                      </button>
+                    </div>
+
+                    {/* View Details button */}
+                    <button
+                      className="px-2 py-2 rounded-lg text-white text-sm font-medium flex items-center transition-all hover:opacity-90"
+                      style={buttonStyle}
+                      onClick={() => handleViewSubModul(subModul.id)}
+                    >
+                      <FiEye className="mr-1" />
+                      Lihat
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           );

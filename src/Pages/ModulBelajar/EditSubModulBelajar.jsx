@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { useDispatch } from "react-redux";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { getMe } from "../../features/authSlice";
 import { useStateContext } from "../../contexts/ContextProvider";
 
@@ -14,7 +14,7 @@ import debounce from "../../utils/debounce";
 import { prepareHtmlForPreview } from "../../utils/htmlProcessor";
 import { formatCompressionStats } from "../../utils/formatters";
 
-const AddSubModulBelajar = () => {
+const EditSubModulBelajar = () => {
   const [subJudul, setSubJudul] = useState("");
   const [subDeskripsi, setSubDeskripsi] = useState("");
   const [content, setContent] = useState("");
@@ -23,42 +23,31 @@ const AddSubModulBelajar = () => {
   const [processedContent, setProcessedContent] = useState("");
   const [formErrors, setFormErrors] = useState({});
 
-  // Context dan utils
   const { currentColor } = useStateContext();
-  const location = useLocation();
+  const { id } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // Custom hooks
   const { compressContentImages, compressionStats, isCompressing } =
     useImageCompression({
       maxSizeMB: 1,
       maxWidthOrHeight: 800,
     });
 
-  // Format stats untuk ditampilkan
   const formattedStats = formatCompressionStats(compressionStats);
 
-  // Cek autentikasi saat komponen pertama kali dimuat
   useEffect(() => {
     dispatch(getMe());
   }, [dispatch]);
 
-  // Cek modulId dari URL parameter atau location state
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     if (token) {
-      if (location.state && location.state.modulId) {
-        setModulId(location.state.modulId);
-        console.log("ModulId diterima:", location.state.modulId);
-      } else {
-        alert("Tidak terdapat modulId");
-        navigate(-1);
-      }
+      getSubModulById();
     } else {
-      navigate("/");
+      navigate("/login");
     }
-  }, [navigate, location]);
+  }, [navigate]);
 
   // Handler untuk perubahan konten editor
   const handleContentChange = (value) => {
@@ -87,32 +76,46 @@ const AddSubModulBelajar = () => {
     [compressContentImages]
   );
 
-  // Handler untuk submit form
-  const saveSubModul = async (e) => {
+  const getSubModulById = async () => {
+    const token = localStorage.getItem("accessToken");
+    const response = await axios.get(`http://localhost:5000/sub-modul/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    setSubJudul(response.data.subJudul);
+    setSubDeskripsi(response.data.subDeskripsi);
+    setContent(response.data.content);
+    setModulId(response.data.modulId);
+  };
+
+  const updateSubModul = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    const jsonData = {
-      subJudul: subJudul,
-      subDeskripsi: subDeskripsi,
-      content: content,
-      modulId: modulId,
-    };
+    const formData = new FormData();
+    formData.append("subJudul", subJudul);
+    formData.append("subDeskripsi", subDeskripsi);
+    formData.append("content", content);
+    formData.append("modulId", modulId);
+
+    const jsonData = {};
+    formData.forEach((value, key) => {
+      jsonData[key] = value;
+    });
 
     try {
       const token = localStorage.getItem("accessToken");
-      await axios.post("http://localhost:5000/sub-modul", jsonData, {
+      await axios.patch(`http://localhost:5000/sub-modul/${id}`, jsonData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       });
       navigate(`/list-sub-modul-belajar/${modulId}`);
+      setIsSubmitting(false);
     } catch (error) {
-      console.error(
-        "Error:",
-        error.response ? error.response.data : error.message
-      );
+      console.log(error);
       setIsSubmitting(false);
     }
   };
@@ -131,7 +134,7 @@ const AddSubModulBelajar = () => {
 
           {/* Form */}
           <div className="p-10">
-            <form onSubmit={saveSubModul} className="space-y-8">
+            <form onSubmit={updateSubModul} className="space-y-8">
               <div className="bg-blue-50 dark:bg-gray-700 p-6 rounded-lg">
                 {/* Modul ID Field */}
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2 mt-5">
@@ -323,7 +326,7 @@ const AddSubModulBelajar = () => {
               <div className="flex items-center justify-between pt-8 px-6">
                 <button
                   type="button"
-                  onClick={() => navigate("/pelajaran")}
+                  onClick={() => navigate(-1)}
                   className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none"
                   style={{
                     focus: {
@@ -398,4 +401,4 @@ const AddSubModulBelajar = () => {
   );
 };
 
-export default AddSubModulBelajar;
+export default EditSubModulBelajar;

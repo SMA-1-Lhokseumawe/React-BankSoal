@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 import { getMe } from "../features/authSlice";
 import { useStateContext } from "../contexts/ContextProvider";
 
+import { FiEye, FiHeadphones, FiActivity } from "react-icons/fi";
+
 const ProfileSaya = () => {
   const [siswaId, setSiswaId] = useState("");
   const [guruId, setGuruId] = useState("");
@@ -14,6 +16,7 @@ const ProfileSaya = () => {
   const [nama, setNama] = useState("");
   const [email, setEmail] = useState("");
   const [kelas, setKelas] = useState("");
+  const [gayaBelajar, setGayaBelajar] = useState("");
   const [gender, setGender] = useState("");
   const [umur, setUmur] = useState("");
   const [tanggalLahir, setTanggalLahir] = useState("");
@@ -70,6 +73,7 @@ const ProfileSaya = () => {
         setNama(profileData.nama);
         setEmail(profileData.email);
         setKelas(profileData.kelas.kelas);
+        setGayaBelajar(profileData.gayaBelajar);
         setGender(profileData.gender);
         setUmur(profileData.umur);
         setAlamat(profileData.alamat);
@@ -127,18 +131,24 @@ const ProfileSaya = () => {
     if (!name) return "U";
     const names = name.split(" ");
     if (names.length === 1) return names[0].charAt(0).toUpperCase();
-    return (names[0].charAt(0) + names[names.length - 1].charAt(0)).toUpperCase();
+    return (
+      names[0].charAt(0) + names[names.length - 1].charAt(0)
+    ).toUpperCase();
   };
 
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800">
         <div className="text-center">
-          <div 
+          <div
             className="w-12 h-12 rounded-full border-4 border-t-transparent border-opacity-50 animate-spin mx-auto"
-            style={{ borderColor: `${currentColor} transparent ${currentColor} ${currentColor}` }}
+            style={{
+              borderColor: `${currentColor} transparent ${currentColor} ${currentColor}`,
+            }}
           ></div>
-          <p className="mt-4 text-gray-600 dark:text-gray-300">Memuat profil...</p>
+          <p className="mt-4 text-gray-600 dark:text-gray-300">
+            Memuat profil...
+          </p>
         </div>
       </div>
     );
@@ -149,13 +159,13 @@ const ProfileSaya = () => {
       <div className="max-w-full mx-auto">
         {/* Profile Header Card */}
         <div className="bg-white dark:bg-secondary-dark-bg rounded-xl shadow-lg overflow-hidden mb-6">
-          <div 
+          <div
             className="h-40 w-full relative"
             style={{ backgroundColor: currentColor }}
           >
             <div className="absolute bottom-0 left-0 w-full h-16 bg-gradient-to-t from-black/30 to-transparent"></div>
           </div>
-          
+
           <div className="px-4 sm:px-8 pb-6 flex flex-col items-center relative">
             {/* Edit Profile Button - Positioned in top right with responsive design */}
             <div className="absolute top-4 right-4 z-10">
@@ -170,25 +180,36 @@ const ProfileSaya = () => {
                   }
                 }}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 sm:h-4 sm:w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-3 w-3 sm:h-4 sm:w-4 mr-1"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                  />
                 </svg>
                 <span className="whitespace-nowrap">Edit Profil</span>
               </button>
             </div>
-            
+
             {/* Profile Avatar - Positioned to overlap the banner */}
             <div className="absolute -top-16 sm:-top-20 w-full flex justify-center">
               {preview ? (
                 <div className="w-28 h-28 sm:w-36 sm:h-36 rounded-full border-4 border-white dark:border-gray-800 shadow-lg overflow-hidden">
-                  <img 
-                    src={preview} 
-                    alt={nama} 
+                  <img
+                    src={preview}
+                    alt={nama}
                     className="w-full h-full object-cover"
                   />
                 </div>
               ) : (
-                <div 
+                <div
                   className="w-28 h-28 sm:w-36 sm:h-36 rounded-full border-4 border-white dark:border-gray-800 shadow-lg flex items-center justify-center text-white text-3xl sm:text-4xl font-bold"
                   style={{ backgroundColor: currentColor }}
                 >
@@ -196,23 +217,39 @@ const ProfileSaya = () => {
                 </div>
               )}
             </div>
-            
+
             {/* Profile Info - Below the avatar with proper spacing */}
             <div className="mt-14 sm:mt-20 text-center w-full">
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-white">{nama}</h1>
-              <p className="text-gray-600 dark:text-gray-300 mt-1 text-base sm:text-lg">@{username}</p>
-              
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-white">
+                {nama}
+              </h1>
+              <p className="text-gray-600 dark:text-gray-300 mt-1 text-base sm:text-lg">
+                @{username}
+              </p>
+
               <div className="mt-3 sm:mt-4 flex justify-center gap-2">
-                <span 
+                <span
                   className="px-3 py-1 sm:px-4 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium text-white shadow-sm"
                   style={{ backgroundColor: currentColor }}
                 >
                   {user && user.role === "guru" ? "Guru" : "Siswa"}
                 </span>
                 {user && user.role === "siswa" && (
-                  <span className="px-3 py-1 sm:px-4 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 shadow-sm">
-                    {kelas}
-                  </span>
+                  <>
+                    <span className="px-3 py-1 sm:px-4 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 shadow-sm">
+                      {kelas}
+                    </span>
+                    <span className="px-3 py-1 sm:px-4 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 shadow-sm flex items-center gap-1">
+                      {gayaBelajar === "Visual" && <FiEye className="mr-1" />}
+                      {gayaBelajar === "Auditori" && (
+                        <FiHeadphones className="mr-1" />
+                      )}
+                      {gayaBelajar === "Kinestetik" && (
+                        <FiActivity className="mr-1" />
+                      )}
+                      {gayaBelajar}
+                    </span>
+                  </>
                 )}
               </div>
             </div>
@@ -222,18 +259,24 @@ const ProfileSaya = () => {
         {/* Profile Details */}
         <div className="bg-white dark:bg-secondary-dark-bg rounded-xl shadow-lg overflow-hidden mb-6">
           <div className="p-6">
-            <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Informasi Personal</h2>
-            
+            <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">
+              Informasi Personal
+            </h2>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Username */}
               <div>
-                <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Username</h3>
+                <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                  Username
+                </h3>
                 <p className="mt-1 text-gray-800 dark:text-white">{username}</p>
               </div>
 
               {/* Email */}
               <div>
-                <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Email</h3>
+                <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                  Email
+                </h3>
                 <p className="mt-1 text-gray-800 dark:text-white">{email}</p>
               </div>
 
@@ -249,7 +292,9 @@ const ProfileSaya = () => {
 
               {/* Gender */}
               <div>
-                <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Jenis Kelamin</h3>
+                <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                  Jenis Kelamin
+                </h3>
                 <p className="mt-1 text-gray-800 dark:text-white">{gender}</p>
               </div>
 
@@ -259,15 +304,17 @@ const ProfileSaya = () => {
                   {user && user.role === "guru" ? "Tanggal Lahir" : "Umur"}
                 </h3>
                 <p className="mt-1 text-gray-800 dark:text-white">
-                  {user && user.role === "guru" 
-                    ? formatDateForDisplay(tanggalLahir) 
+                  {user && user.role === "guru"
+                    ? formatDateForDisplay(tanggalLahir)
                     : `${umur} tahun`}
                 </p>
               </div>
 
               {/* Alamat */}
               <div>
-                <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Alamat</h3>
+                <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                  Alamat
+                </h3>
                 <p className="mt-1 text-gray-800 dark:text-white">{alamat}</p>
               </div>
             </div>
@@ -275,27 +322,33 @@ const ProfileSaya = () => {
         </div>
 
         {/* Additional Information Card */}
-        <div 
+        <div
           className="bg-white dark:bg-secondary-dark-bg rounded-xl shadow-lg overflow-hidden mb-6 border-l-4"
           style={{ borderLeftColor: currentColor }}
         >
           <div className="p-6">
             <div className="flex items-center">
-              <div 
+              <div
                 className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center"
                 style={{ backgroundColor: `${currentColor}20` }}
               >
-                <svg 
-                  className="w-6 h-6" 
+                <svg
+                  className="w-6 h-6"
                   style={{ fill: currentColor }}
-                  xmlns="http://www.w3.org/2000/svg" 
+                  xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 20 20"
                 >
-                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                  <path
+                    fillRule="evenodd"
+                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                    clipRule="evenodd"
+                  />
                 </svg>
               </div>
               <div className="ml-4">
-                <h3 className="text-lg font-medium text-gray-800 dark:text-white">Informasi Profil</h3>
+                <h3 className="text-lg font-medium text-gray-800 dark:text-white">
+                  Informasi Profil
+                </h3>
                 <p className="mt-1 text-gray-600 dark:text-gray-300">
                   {user && user.role === "guru"
                     ? "Ini adalah halaman profil guru Anda. Untuk mengubah profil, silakan klik button `Edit Profile`."
@@ -311,12 +364,12 @@ const ProfileSaya = () => {
           <button
             onClick={() => navigate("/dashboard")}
             className="px-6 py-3 rounded-lg shadow-md transition duration-300 ease-in-out text-white font-medium focus:outline-none focus:ring-2 focus:ring-offset-2"
-            style={{ 
+            style={{
               backgroundColor: currentColor,
               boxShadow: `0 4px 14px 0 ${currentColor}40`,
               focus: {
                 ringColor: currentColor,
-              }
+              },
             }}
           >
             Kembali ke Dashboard

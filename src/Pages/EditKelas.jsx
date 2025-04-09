@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useDispatch } from "react-redux";
@@ -7,6 +8,7 @@ import { useStateContext } from "../contexts/ContextProvider";
 
 const EditKelas = () => {
   const [kelas, setKelas] = useState("");
+  const [namaKelas, setNamaKelas] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { currentColor } = useStateContext();
@@ -38,11 +40,12 @@ const EditKelas = () => {
     });
     setKelas(response.data.kelas);
   };
-  
+
   const updateKelas = async (e) => {
     e.preventDefault();
     const formData = new FormData();
     formData.append("kelas", kelas);
+    formData.append("namaKelas", namaKelas);
 
     const jsonData = {};
     formData.forEach((value, key) => {
@@ -77,12 +80,42 @@ const EditKelas = () => {
             <form onSubmit={updateKelas} className="space-y-8">
               <div className="bg-blue-50 dark:bg-gray-700 p-6 rounded-lg">
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                  Kelas
+                </label>
+                <div className="relative rounded-md shadow-sm">
+                  <select
+                    name="kelas"
+                    required
+                    className="block w-full px-4 py-3 rounded-md border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:outline-none transition duration-150 appearance-none"
+                    style={{
+                      boxShadow: `0 0 0 1px ${currentColor}`,
+                      borderColor: currentColor,
+                      focus: {
+                        outline: "none",
+                        boxShadow: `0 0 0 2px ${currentColor}`,
+                        borderColor: currentColor,
+                      },
+                    }}
+                    value={kelas}
+                    onChange={(e) => setKelas(e.target.value)}
+                  >
+                    <option value="">Pilih Kelas</option>
+                    <option value="10">Kelas 10</option>
+                    <option value="11">Kelas 11</option>
+                    <option value="12">Kelas 12</option>
+                  </select>
+                </div>
+                <p className="mt-2 text-sm text-gray-500 dark:text-gray-300">
+                  Pilih kelas
+                </p>
+
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2 mt-5">
                   Nama Kelas
                 </label>
                 <div className="relative rounded-md shadow-sm">
                   <input
                     type="text"
-                    name="kelas"
+                    name="namaKelas"
                     required
                     placeholder="Contoh: X-1, XI IPA 2, XII IPS 3"
                     className="block w-full px-4 py-3 rounded-md border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:outline-none transition duration-150"
@@ -95,8 +128,8 @@ const EditKelas = () => {
                         borderColor: currentColor,
                       },
                     }}
-                    value={kelas}
-                    onChange={(e) => setKelas(e.target.value)}
+                    value={namaKelas}
+                    onChange={(e) => setNamaKelas(e.target.value)}
                   />
                 </div>
                 <p className="mt-2 text-sm text-gray-500 dark:text-gray-300">
@@ -159,8 +192,8 @@ const EditKelas = () => {
             </div>
             <div className="ml-3">
               <p className="text-sm text-gray-700 dark:text-white">
-                Update kelas akan langsung berubah dalam sistem.
-                Pastikan data yang dimasukkan sudah benar.
+                Update kelas akan langsung berubah dalam sistem. Pastikan data
+                yang dimasukkan sudah benar.
               </p>
             </div>
           </div>

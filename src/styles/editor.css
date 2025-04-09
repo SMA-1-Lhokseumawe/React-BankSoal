@@ -1,0 +1,64 @@
+/* Tambahkan CSS ini ke file editor.css atau inline dalam komponen QuillEditor */
+
+/* Pastikan container editor memiliki overflow yang tepat */
+.quill-editor-container {
+    position: relative;
+    overflow: hidden; /* Mencegah content overflow dari container */
+    border-radius: 0.375rem;
+  }
+  
+  /* Membatasi ukuran gambar dalam editor */
+  .quill-editor-container .ql-editor img {
+    max-width: 100% !important; /* Force max-width 100% */
+    height: auto !important; /* Menjaga aspect ratio */
+    object-fit: contain; /* Tampilkan seluruh gambar dengan menjaga proporsi */
+    margin: 0.5rem 0; /* Margin untuk spacing */
+    display: block; /* Block display untuk kontrol lebih baik */
+  }
+  
+  /* Menangani ukuran normal untuk gambar baru yang diupload */
+  .quill-editor-container .ql-editor p img {
+    width: auto; /* Biarkan lebar asli asalkan tidak melebihi max-width */
+    max-height: 300px; /* Batasi tinggi maksimum */
+  }
+  
+  /* Pastikan editor scrollable jika konten terlalu panjang */
+  .quill-editor-container .ql-editor {
+    overflow-y: auto;
+    min-height: 200px;
+    max-height: 400px;
+  }
+  
+  /* Fixes untuk mencegah content keluar dari container */
+  .quill-editor-container .ql-container {
+    overflow: hidden;
+  }
+  
+  /* Pastikan container memiliki display yang tepat */
+  .quill-editor-container .ql-container,
+  .quill-editor-container .ql-editor {
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  /* Tambahkan styling khusus untuk emoji agar tidak terlalu besar */
+  .quill-editor-container .ql-editor .emoji {
+    height: 1.25em;
+    width: 1.25em;
+    vertical-align: -0.3em;
+    display: inline-block;
+  }
+  
+  /* Perbaikan untuk display textarea internal */
+  .quill-editor-container .ql-container .ql-editor {
+    word-break: break-word;
+    white-space: pre-wrap;
+  }
+
+  .ql-editor img {
+    max-width: 400px !important;
+    width: auto !important;
+    height: auto !important;
+    display: block !important;
+    margin: 0.5rem auto !important;
+  }

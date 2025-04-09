@@ -35,6 +35,11 @@ import Discussion from "./Pages/Discussion";
 import AddModulBelajar from "./Pages/ModulBelajar/AddModulBelajar";
 import AddSubModulBelajar from "./Pages/ModulBelajar/AddSubModulBelajar";
 import ListSubModulBelajar from "./Pages/ModulBelajar/ListSubModulBelajar";
+import EditModulBelajar from "./Pages/ModulBelajar/EditModulBelajar";
+import EditSubModulBelajar from "./Pages/ModulBelajar/EditSubModulBelajar";
+import ViewContent from "./Pages/ModulBelajar/ViewContent";
+import FillKuesioner from "./Pages/Kuesioner/FillKuesioner";
+import HasilTes from "./Pages/Kuesioner/HasilTes";
 
 const AppContent = () => {
   const { activeMenu, themeSettings, setThemeSettings, currentColor, currentMode } = useStateContext();
@@ -101,6 +106,8 @@ const AppContent = () => {
               <Route path="/form-discussion" element={<FormDiscussion />} />
               <Route path="/diskusi" element={<Discussion />} />
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/tes-gaya-belajar" element={<FillKuesioner />} />
+              <Route path="/hasil-tes" element={<HasilTes />} />
               <Route path="/profile-saya" element={<ProfileSaya />} />
               <Route path="/siswa" element={<ListSiswa />} />
               <Route path="/guru" element={<ListGuru />} />
@@ -118,9 +125,12 @@ const AppContent = () => {
               <Route path="/users/:id" element={<EditUsers />} />
               <Route path="/ganti-password" element={<GantiPassword />} />
               <Route path="/modul-belajar" element={<ListModulBelajar />} />
-              <Route path="/list-sub-modul-belajar" element={<ListSubModulBelajar />} />
-              <Route path="/add-modul-belajar" element={<AddModulBelajar />} />
-              <Route path="/add-sub-modul-belajar" element={<AddSubModulBelajar />} />
+              <Route path="/modul-belajar/edit/:id" element={<EditModulBelajar />} />
+              <Route path="/list-sub-modul-belajar/:id" element={<ListSubModulBelajar />} />
+              <Route path="/sub-modul-belajar/edit/:id" element={<EditSubModulBelajar />} />
+              <Route path="/sub-modul-belajar/view/:id" element={<ViewContent />} />
+              <Route path="/modul-belajar/tambah-modul-belajar" element={<AddModulBelajar />} />
+              <Route path="/sub-modul-belajar/tambah-sub-modul-belajar" element={<AddSubModulBelajar />} />
             </Routes>
           </div>
 

@@ -280,7 +280,7 @@ const Dashboard = () => {
           <p className="font-bold">Perhatian!</p>
           <p>
             Anda belum mengisi kuesioner untuk menentukan gaya belajar Anda.{" "}
-            <a href="/link-kuesioner" className="text-blue-500 underline">
+            <a href="/tes-gaya-belajar" className="text-blue-500 underline">
               Silakan klik di sini untuk mengisi kuesioner.
             </a>
           </p>

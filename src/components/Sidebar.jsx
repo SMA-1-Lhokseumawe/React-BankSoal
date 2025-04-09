@@ -77,7 +77,7 @@ const Sidebar = () => {
           name: 'modul-belajar',
           displayName: 'modul belajar',
           icon: <BiSolidBookmarks />,
-          allowedRoles: ['admin', 'guru'], // Admin and guru can access modul belajar
+          allowedRoles: ['admin', 'guru', 'siswa'], // Admin and guru can access modul belajar
         },
       ],
     },

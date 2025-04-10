@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { getMe } from "../../features/authSlice";
 import { useStateContext } from "../../contexts/ContextProvider";
@@ -11,6 +11,8 @@ const ListSubModulBelajar = () => {
   const [judulModul, setJudulModul] = useState("");
   const [loading, setLoading] = useState(true);
   const { currentColor, currentMode } = useStateContext();
+
+  const { user } = useSelector((state) => state.auth);
 
   const { id } = useParams();
   const dispatch = useDispatch();
@@ -55,14 +57,11 @@ const ListSubModulBelajar = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await axios.get(
-        `http://localhost:5000/modul/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axios.get(`http://localhost:5000/modul/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       setJudulModul(response.data.judul);
       setLoading(false);
@@ -114,16 +113,22 @@ const ListSubModulBelajar = () => {
         </p>
       </div>
 
-      <div>
-        <button
-          className="inline-flex items-center px-5 py-2.5 rounded-lg text-white font-medium shadow-sm hover:shadow-md transition-all"
-          style={buttonStyle}
-          onClick={() => navigate("/sub-modul-belajar/tambah-sub-modul-belajar", { state: { modulId: id } })}
-        >
-          <FiPlus className="mr-2" />
-          Tambah Sub Modul
-        </button>
-      </div>
+      {user && user.role !== "siswa" && (
+        <div>
+          <button
+            className="inline-flex items-center px-5 py-2.5 rounded-lg text-white font-medium shadow-sm hover:shadow-md transition-all"
+            style={buttonStyle}
+            onClick={() =>
+              navigate("/sub-modul-belajar/tambah-sub-modul-belajar", {
+                state: { modulId: id },
+              })
+            }
+          >
+            <FiPlus className="mr-2" />
+            Tambah Sub Modul
+          </button>
+        </div>
+      )}
 
       {/* Cards Grid */}
       <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
@@ -149,37 +154,35 @@ const ListSubModulBelajar = () => {
                 </p>
 
                 {/* Card Footer */}
-                <div className="px-6 py-4 bg-gray-50 dark:bg-gray-700 border-t border-gray-100 dark:border-gray-600">
-                  {/* Action Buttons */}
-                  <div className="flex justify-between items-center">
-                    {/* Edit and Delete buttons */}
-                    <div className="flex space-x-2">
-                      <button
-                        onClick={() => handleEdit(subModul.id)}
-                        className="px-3 py-1.5 bg-amber-500 text-white rounded-lg text-sm font-medium flex items-center transition-all hover:bg-amber-600"
-                      >
-                        <FiEdit2 className="mr-1" />
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDeleteSubModul(subModul.id)}
-                        className="px-3 py-1.5 bg-red-500 text-white rounded-lg text-sm font-medium flex items-center transition-all hover:bg-red-600"
-                      >
-                        <FiTrash2 className="mr-1" />
-                        Hapus
-                      </button>
-                    </div>
-
-                    {/* View Details button */}
-                    <button
-                      className="px-2 py-2 rounded-lg text-white text-sm font-medium flex items-center transition-all hover:opacity-90"
-                      style={buttonStyle}
-                      onClick={() => handleViewSubModul(subModul.id)}
-                    >
-                      <FiEye className="mr-1" />
-                      Lihat
-                    </button>
+                <div className="flex justify-between items-center">
+                  {/* Left side: Edit and Delete buttons */}
+                  <div className="flex space-x-2">
+                    {user && user.role !== "siswa" && (
+                      <>
+                        <button
+                          onClick={() => handleEdit(subModul.id)}
+                          className="px-3 py-1.5 bg-amber-500 text-white rounded-lg text-sm font-medium flex items-center transition-all hover:bg-amber-600"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDeleteSubModul(subModul.id)}
+                          className="px-3 py-1.5 bg-red-500 text-white rounded-lg text-sm font-medium flex items-center transition-all hover:bg-red-600"
+                        >
+                          Hapus
+                        </button>
+                      </>
+                    )}
                   </div>
+
+                  {/* Right side: View Details button */}
+                  <button
+                    onClick={() => handleViewSubModul(subModul.id)}
+                    style={{ backgroundColor: currentColor }}
+                    className="px-3 py-1.5 text-white rounded-lg text-sm font-medium flex items-center transition-all hover:opacity-90"
+                  >
+                    Lihat
+                  </button>
                 </div>
               </div>
             </div>

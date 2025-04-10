@@ -18,7 +18,6 @@ import {
 } from "react-icons/fi";
 
 const ListModulBelajar = () => {
-  const [gayaBelajar, setGayaBelajar] = useState("");
   const [modul, setModul] = useState([]);
   const [filteredModul, setFilteredModul] = useState([]);
   const [showModal, setShowModal] = useState(false);
@@ -105,7 +104,6 @@ const ListModulBelajar = () => {
         },
       });
       const gayaBelajar = response.data.data.gayaBelajar;
-      setGayaBelajar(gayaBelajar);
 
       // Check if gayaBelajar is null and show modal if it is
       if (response.data.data.gayaBelajar === null) {

@@ -40,6 +40,7 @@ import EditSubModulBelajar from "./Pages/ModulBelajar/EditSubModulBelajar";
 import ViewContent from "./Pages/ModulBelajar/ViewContent";
 import FillKuesioner from "./Pages/Kuesioner/FillKuesioner";
 import HasilTes from "./Pages/Kuesioner/HasilTes";
+import AddDiscussion from "./Pages/AddDiscussion";
 
 const AppContent = () => {
   const { activeMenu, themeSettings, setThemeSettings, currentColor, currentMode } = useStateContext();
@@ -105,6 +106,7 @@ const AppContent = () => {
               <Route path="/reset-password/:token" element={<ResetPassword />} />
               <Route path="/form-discussion" element={<FormDiscussion />} />
               <Route path="/diskusi" element={<Discussion />} />
+              <Route path="/add-diskusi" element={<AddDiscussion />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/tes-gaya-belajar" element={<FillKuesioner />} />
               <Route path="/hasil-tes" element={<HasilTes />} />

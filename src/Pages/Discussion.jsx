@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
+import _ from "lodash";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { getMe } from "../features/authSlice";
@@ -25,6 +26,7 @@ const Discussion = () => {
   const [postWithoutComment, setPostWithoutComment] = useState([]);
   const [myPost, setMyPost] = useState([]);
   const [allComments, setAllComments] = useState([]);
+  const [topUsers, setTopUsers] = useState([]);
   const [namaProfile, setNamaProfile] = useState("");
   const [urlImageProfile, seturlImageProfile] = useState("");
   const [showCommentForm, setShowCommentForm] = useState(null);
@@ -54,10 +56,6 @@ const Discussion = () => {
       currentMode === "Dark"
         ? `linear-gradient(135deg, ${currentColor}20 0%, ${currentColor}40 100%)`
         : `linear-gradient(135deg, ${currentColor}10 0%, ${currentColor}30 100%)`,
-  };
-
-  const buttonStyle = {
-    backgroundColor: currentColor,
   };
 
   const toggleMenu = (id) => {
@@ -95,25 +93,16 @@ const Discussion = () => {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
+      // Periksa apakah menu aktif dan klik tidak berada di dalam elemen dengan kelas menu-container
       if (activeMenu && !event.target.closest(".menu-container")) {
         setActiveMenu(null);
       }
     };
 
+    // Tambahkan event listener
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [activeMenu]);
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (activeMenu && !event.target.closest(".menu-container")) {
-        setActiveMenu(null);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
+    // Bersihkan event listener saat komponen di-unmount
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
@@ -364,15 +353,41 @@ const Discussion = () => {
     getAllComments();
   };
 
-  const popularUsers = [
-    { name: "Himanshu", posts: 42, avatar: "H" },
-    { name: "Rohan", posts: 38, avatar: "R" },
-    { name: "Ritika", posts: 35, avatar: "R" },
-    { name: "Karan", posts: 31, avatar: "K" },
-    { name: "Parth", posts: 29, avatar: "P" },
-    { name: "Vedant", posts: 26, avatar: "V" },
-    { name: "Kartik", posts: 23, avatar: "K" },
-  ];
+  const handleDeletePost = async (id) => {
+    const token = localStorage.getItem("accessToken");
+    await axios.delete(`http://localhost:5000/post/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    getMyPost();
+    getAllPost();
+  };
+
+  const handleEditDiscussion = (id) => {
+    console.log("Editing discussion with ID:", id);
+    navigate(`/diskusi/edit/${id}`);
+  };
+
+  const calculateTopUsers = useCallback(() => {
+    const calculatedTopUsers = _(post)
+      .groupBy("namaProfile")
+      .map((posts, name) => ({
+        name: name,
+        posts: posts.length,
+        avatar: name.charAt(0).toUpperCase(),
+        urlImageProfile: posts[0].urlImageProfile,
+      }))
+      .orderBy("posts", "desc")
+      .take(7)
+      .value();
+
+    setTopUsers(calculatedTopUsers);
+  }, [post]);
+
+  useEffect(() => {
+    calculateTopUsers();
+  }, [calculateTopUsers]);
 
   const filters = ["All", "Unanswered", "My Questions"];
 
@@ -551,7 +566,7 @@ const Discussion = () => {
                         {/* Dropdown Menu */}
                         {activeMenu === question.id && (
                           <div
-                            className={`absolute right-0 mt-1 py-2 w-32 rounded-md shadow-lg z-10 ${
+                            className={`absolute right-0 mt-1 py-2 w-32 rounded-md shadow-lg z-10 menu-container ${
                               currentMode === "Dark"
                                 ? "bg-secondary-dark-bg border border-gray-700"
                                 : "bg-white border border-gray-200"
@@ -563,6 +578,10 @@ const Discussion = () => {
                                   ? "text-blue-300 hover:bg-dark-bg"
                                   : "text-blue-700 hover:bg-gray-100"
                               } flex items-center`}
+                              onClick={(e) => {
+                                e.stopPropagation(); // Mencegah event bubbling
+                                handleEditDiscussion(question.id);
+                              }}
                             >
                               <FaEdit className="mr-2" size={14} /> Edit
                             </button>
@@ -572,6 +591,10 @@ const Discussion = () => {
                                   ? "text-red-400 hover:bg-dark-bg"
                                   : "text-red-500 hover:bg-gray-100"
                               } flex items-center`}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeletePost(question.id);
+                              }}
                             >
                               <FaTrash className="mr-2" size={14} /> Delete
                             </button>
@@ -987,7 +1010,7 @@ const Discussion = () => {
           </div>
 
           <ul className="p-4 space-y-3">
-            {popularUsers.map((user, index) => (
+            {topUsers.map((user, index) => (
               <li
                 key={index}
                 className={`flex items-center justify-between p-2 rounded-lg transition-all ${
@@ -997,12 +1020,20 @@ const Discussion = () => {
                 } cursor-pointer`}
               >
                 <div className="flex items-center">
-                  <div
-                    className="w-8 h-8 rounded-full flex items-center justify-center text-white font-medium mr-3"
-                    style={{ backgroundColor: currentColor }}
-                  >
-                    {user.avatar}
-                  </div>
+                  {user.urlImageProfile ? (
+                    <img
+                      src={user.urlImageProfile}
+                      alt={`${user.name}'s profile`}
+                      className="w-8 h-8 rounded-full object-cover mr-3"
+                    />
+                  ) : (
+                    <div
+                      className="w-8 h-8 rounded-full flex items-center justify-center text-white font-medium mr-3"
+                      style={{ backgroundColor: currentColor }}
+                    >
+                      {user.avatar}
+                    </div>
+                  )}
                   <span
                     className={
                       currentMode === "Dark" ? "text-gray-200" : "text-gray-700"
@@ -1023,65 +1054,6 @@ const Discussion = () => {
               </li>
             ))}
           </ul>
-
-          {/* Community Stats */}
-          <div
-            className={`p-4 border-t ${
-              currentMode === "Dark"
-                ? "border-gray-700 bg-dark-bg"
-                : "border-gray-200 bg-gray-50"
-            }`}
-          >
-            <h3
-              className={`font-medium mb-3 ${
-                currentMode === "Dark" ? "text-gray-200" : "text-gray-700"
-              }`}
-            >
-              Community Statistics
-            </h3>
-            <div className="grid grid-cols-2 gap-2">
-              <div
-                className={`p-3 rounded-lg ${
-                  currentMode === "Dark" ? "bg-secondary-dark-bg" : "bg-white"
-                }`}
-              >
-                <p
-                  className={`text-xs ${
-                    currentMode === "Dark" ? "text-gray-400" : "text-gray-500"
-                  }`}
-                >
-                  Active Discussions
-                </p>
-                <p
-                  className={`text-lg font-bold ${
-                    currentMode === "Dark" ? "text-gray-200" : "text-gray-700"
-                  }`}
-                >
-                  128
-                </p>
-              </div>
-              <div
-                className={`p-3 rounded-lg ${
-                  currentMode === "Dark" ? "bg-secondary-dark-bg" : "bg-white"
-                }`}
-              >
-                <p
-                  className={`text-xs ${
-                    currentMode === "Dark" ? "text-gray-400" : "text-gray-500"
-                  }`}
-                >
-                  Members Online
-                </p>
-                <p
-                  className={`text-lg font-bold ${
-                    currentMode === "Dark" ? "text-gray-200" : "text-gray-700"
-                  }`}
-                >
-                  42
-                </p>
-              </div>
-            </div>
-          </div>
 
           {/* Create Post Prompt */}
           <div className="p-4">

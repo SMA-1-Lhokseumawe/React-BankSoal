@@ -14,7 +14,7 @@ const LoginPage = () => {
   const { user, isError, isSuccess, isLoading, message } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    if (user || isSuccess) {
+    if (isSuccess) {
       navigate("/dashboard");
     }
     // Reset state only if login was attempted

@@ -41,6 +41,7 @@ import ViewContent from "./Pages/ModulBelajar/ViewContent";
 import FillKuesioner from "./Pages/Kuesioner/FillKuesioner";
 import HasilTes from "./Pages/Kuesioner/HasilTes";
 import AddDiscussion from "./Pages/AddDiscussion";
+import EditDiscussion from "./Pages/EditDiscussion";
 
 const AppContent = () => {
   const { activeMenu, themeSettings, setThemeSettings, currentColor, currentMode } = useStateContext();
@@ -107,6 +108,7 @@ const AppContent = () => {
               <Route path="/form-discussion" element={<FormDiscussion />} />
               <Route path="/diskusi" element={<Discussion />} />
               <Route path="/add-diskusi" element={<AddDiscussion />} />
+              <Route path="/diskusi/edit/:id" element={<EditDiscussion />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/tes-gaya-belajar" element={<FillKuesioner />} />
               <Route path="/hasil-tes" element={<HasilTes />} />

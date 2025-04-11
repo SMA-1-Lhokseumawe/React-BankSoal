@@ -107,7 +107,6 @@ export const authSlice = createSlice({
     });
 
     builder.addCase(LogOut.fulfilled, (state) => {
-      state.user = null;
       state.isSuccess = false;
       state.isLoading = false;
       state.isError = false;

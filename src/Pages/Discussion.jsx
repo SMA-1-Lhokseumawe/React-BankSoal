@@ -950,24 +950,29 @@ const Discussion = () => {
                         rows="3"
                         className={`w-full p-3 rounded-lg border ${
                           currentMode === "Dark"
-                            ? "bg-dark-bg border-gray-600 text-gray-200"
-                            : "bg-gray-50 border-gray-200 text-gray-700"
-                        } focus:outline-none focus:ring-2 focus:ring-opacity-40 mb-2`}
-                        style={{ focusRingColor: currentColor }}
+                            ? "bg-gray-800 border-gray-700 text-gray-200 placeholder-gray-500"
+                            : "bg-gray-50 border-gray-200 text-gray-700 placeholder-gray-400"
+                        } focus:outline-none focus:ring-2 focus:ring-opacity-40 mb-2 transition-colors`}
+                        style={{
+                          boxShadow:
+                            currentMode === "Dark"
+                              ? "0 1px 2px rgba(0, 0, 0, 0.2)"
+                              : "",
+                          ringColor: currentColor,
+                        }}
                       ></textarea>
-                      <div className="flex justify-end">
+                      <div className="flex justify-end gap-2">
                         <Button
                           onClick={() => toggleCommentForm(question.id)}
                           color={
                             currentMode === "Dark" ? "gray-300" : "gray-700"
                           }
                           bgColor={
-                            currentMode === "Dark" ? "#3a3a3a" : "#f5f5f5"
+                            currentMode === "Dark" ? "gray-700" : "#f5f5f5"
                           }
                           text="Cancel"
                           borderRadius="10px"
                           width=""
-                          className="mr-2"
                         />
                         <Button
                           onClick={() => handleAddComment(question.id)}

@@ -1,24 +1,85 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { LogOut, reset } from "../features/authSlice";
+
+import { getMe, LogOut, reset } from "../features/authSlice";
 
 import { MdOutlineCancel } from "react-icons/md";
 import { AiOutlineLogout } from "react-icons/ai";
-import { FiCreditCard } from "react-icons/fi";
 import { BsFillPersonFill } from "react-icons/bs";
 
 import { Button } from ".";
-import { userProfileData } from "../data/dummy";
 import { useStateContext } from "../contexts/ContextProvider";
 import avatar from "../data/avatar.jpg";
 
 const UserProfile = () => {
+  const [urlImage, setUrlImage] = useState(null);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
 
   const { currentColor, setIsClicked, initialState } = useStateContext();
+
+  useEffect(() => {
+    dispatch(getMe());
+  }, [dispatch]);
+
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      if (user && user.role === "guru") {
+        getProfileGuru();
+      } else if (user && user.role === "siswa") {
+        getProfileSiswa();
+      }
+    } else {
+      navigate("/login");
+    }
+  }, [navigate, user]);
+
+  const getProfileSiswa = async () => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      const response = await axios.get("http://localhost:5000/profile-siswa", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.data && response.data.data) {
+        const profileData = response.data.data;
+        setUrlImage(profileData.url);
+      } else {
+        console.error("Format data tidak sesuai:", response.data);
+      }
+    } catch (error) {
+      console.error("Error mengambil profile siswa:", error);
+    } finally {
+    }
+  };
+
+  const getProfileGuru = async () => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      const response = await axios.get("http://localhost:5000/profile-guru", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.data && response.data.data) {
+        const profileData = response.data.data;
+        setUrlImage(profileData.url);
+        console.log(profileData.url);
+        
+      } else {
+        console.error("Format data tidak sesuai:", response.data);
+      }
+    } catch (error) {
+      console.error("Error mengambil profile guru:", error);
+    } finally {
+    }
+  };
 
   const handleClose = () => {
     setIsClicked(initialState);
@@ -51,7 +112,7 @@ const UserProfile = () => {
       <div className="flex gap-5 items-center mt-6 border-color border-b-1 pb-6">
         <img
           className="rounded-full h-24 w-24"
-          src={avatar}
+          src={urlImage || avatar}
           alt="user-profile"
         />
         <div>

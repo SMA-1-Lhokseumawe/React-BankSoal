@@ -2,12 +2,11 @@ import React from 'react'
 import { useSelector } from "react-redux";
 import { Link, NavLink } from 'react-router-dom'
 import { MdOutlineCancel } from 'react-icons/md'
-import { AiOutlineAreaChart, AiOutlineBarChart, AiOutlineStock } from 'react-icons/ai';
-import { FiEdit, FiPieChart } from 'react-icons/fi';
-import { BsKanban, BsBook, BsFillPersonLinesFill, BsPencilSquare, BsPeople, BsDoorOpen, BsChatLeftText } from 'react-icons/bs';
-import { BiColorFill, BiSolidDashboard, BiSolidBookBookmark, BiSolidBookmarks } from 'react-icons/bi';
+import { BsFillPersonLinesFill, BsPencilSquare, BsPeople, BsDoorOpen, BsChatLeftText } from 'react-icons/bs';
+import { BiSolidDashboard, BiSolidBookBookmark, BiSolidBookmarks } from 'react-icons/bi';
 import { PiChalkboardTeacher } from "react-icons/pi";
 import { CgPassword } from "react-icons/cg";
+import { RiNotification3Line } from "react-icons/ri";
 
 import LogoSMA from "../assets/Logo1.png";
 
@@ -18,7 +17,7 @@ const Sidebar = () => {
   const { activeMenu, setActiveMenu, screenSize, currentColor } = useStateContext()
 
   const { user } = useSelector((state) => state.auth);
-  const userRole = user?.role || 'siswa'; // Default to 'siswa' if role is not provided
+  const userRole = user?.role || 'siswa';
 
   // Full links configuration
   const allLinks = [
@@ -29,7 +28,7 @@ const Sidebar = () => {
           name: 'dashboard',
           displayName: 'dashboard',
           icon: <BiSolidDashboard />,
-          allowedRoles: ['admin', 'guru', 'siswa'], // All roles can access dashboard
+          allowedRoles: ['admin', 'guru', 'siswa'],
         },
       ],
     },
@@ -41,43 +40,55 @@ const Sidebar = () => {
           name: 'siswa',
           displayName: 'siswa',
           icon: <BsFillPersonLinesFill />,
-          allowedRoles: ['admin', 'guru'], // Admin and guru can access siswa
+          allowedRoles: ['admin', 'guru'],
         },
         {
           name: 'guru',
           displayName: 'guru',
           icon: <PiChalkboardTeacher />,
-          allowedRoles: ['admin'], // Only admin can access guru
+          allowedRoles: ['admin'],
         },
         {
           name: 'kelas',
           displayName: 'kelas',
           icon: <BsDoorOpen />,
-          allowedRoles: ['admin', 'guru'], // Admin and guru can access kelas
+          allowedRoles: ['admin', 'guru'],
         },
         {
           name: 'quiz',
           displayName: 'quiz',
           icon: <BsPencilSquare />,
-          allowedRoles: ['siswa'], // Admin and guru can access soal
+          allowedRoles: ['siswa'],
         },
         {
           name: 'nilai',
           displayName: 'nilai',
           icon: <BiSolidBookBookmark />,
-          allowedRoles: ['admin', 'guru'], // Admin and guru can access nilai
+          allowedRoles: ['admin', 'guru'],
+        },
+        {
+          name: 'nilai-saya',
+          displayName: 'nilai saya',
+          icon: <BiSolidBookBookmark />,
+          allowedRoles: ['siswa'],
         },
         {
           name: 'pelajaran',
           displayName: 'pelajaran',
           icon: <BiSolidBookBookmark />,
-          allowedRoles: ['admin', 'guru'], // Admin and guru can access pelajaran
+          allowedRoles: ['admin', 'guru'],
         },
         {
           name: 'modul-belajar',
           displayName: 'modul belajar',
           icon: <BiSolidBookmarks />,
-          allowedRoles: ['admin', 'guru', 'siswa'], // Admin and guru can access modul belajar
+          allowedRoles: ['admin', 'guru', 'siswa'],
+        },
+        {
+          name: 'data-soal',
+          displayName: 'data soal',
+          icon: <BsPencilSquare />,
+          allowedRoles: ['admin', 'guru'],
         },
       ],
     },
@@ -85,58 +96,16 @@ const Sidebar = () => {
       title: 'Apps',
       links: [
         {
+          name: 'notifications',
+          displayName: 'notifications',
+          icon: <RiNotification3Line />,
+          allowedRoles: ['admin', 'guru', 'siswa'], // All roles can access diskusi
+        },
+        {
           name: 'diskusi',
           displayName: 'diskusi',
           icon: <BsChatLeftText />,
           allowedRoles: ['admin', 'guru', 'siswa'], // All roles can access diskusi
-        },
-        {
-          name: 'kanban',
-          displayName: 'kanban',
-          icon: <BsKanban />,
-          allowedRoles: ['admin', 'guru'], // Admin and guru can access kanban
-        },
-        {
-          name: 'editor',
-          displayName: 'editor',
-          icon: <FiEdit />,
-          allowedRoles: ['admin', 'guru'], // Admin and guru can access editor
-        },
-        {
-          name: 'color-picker',
-          displayName: 'color picker',
-          icon: <BiColorFill />,
-          allowedRoles: ['admin', 'guru'], // Admin and guru can access color-picker
-        },
-      ],
-    },
-    {
-      title: 'Charts',
-      links: [
-        {
-          name: 'line',
-          displayName: 'line',
-          icon: <AiOutlineStock />,
-          allowedRoles: ['admin', 'guru'], // Admin and guru can access line
-        },
-        {
-          name: 'area',
-          displayName: 'area',
-          icon: <AiOutlineAreaChart />,
-          allowedRoles: ['admin', 'guru'], // Admin and guru can access area
-        },
-  
-        {
-          name: 'bar',
-          displayName: 'bar',
-          icon: <AiOutlineBarChart />,
-          allowedRoles: ['admin', 'guru'], // Admin and guru can access bar
-        },
-        {
-          name: 'pie',
-          displayName: 'pie',
-          icon: <FiPieChart />,
-          allowedRoles: ['admin', 'guru'], // Admin and guru can access pie
         },
       ],
     },

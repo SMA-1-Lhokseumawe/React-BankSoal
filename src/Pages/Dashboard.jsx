@@ -5,6 +5,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { getMe, LogOut, reset } from "../features/authSlice";
 
+import GrafikEvaluasi from "../components/Charts/GrafikEvaluasi"
+
 import {
   BsBook,
   BsPencilSquare,
@@ -13,41 +15,29 @@ import {
   BsRecordFill,
 } from "react-icons/bs";
 import { PiChalkboardTeacher } from "react-icons/pi";
-import { Bar, Pie } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  BarElement,
-  CategoryScale,
-  LinearScale,
-  Title,
-  Tooltip,
-  Legend,
-  ArcElement,
-} from "chart.js";
-
-ChartJS.register(
-  BarElement,
-  CategoryScale,
-  LinearScale,
-  Title,
-  Tooltip,
-  Legend,
-  ArcElement
-);
 
 const Dashboard = () => {
+  const [jumlahModul, setJumlahModul] = useState("");
+  const [jumlahSoal, setJumlahSoal] = useState("");
+  const [jumlahSiswa, setJumlahSiswa] = useState("");
+  const [jumlahGuru, setJumlahGuru] = useState("");
+  const [gayaBelajar, setGayaBelajar] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+  const [redirectPath, setRedirectPath] = useState("");
+
   const earningData = [
     {
       icon: <BsBook />,
-      amount: "3",
-      title: "Ujian",
+      amount: jumlahModul,
+      title: "Modul",
       iconColor: "rgb(255, 244, 229)",
       iconBg: "#40e0ef",
       pcColor: "red-600",
     },
     {
       icon: <BsPencilSquare />,
-      amount: "13",
+      amount: jumlahSoal,
       title: "Soal",
       iconColor: "rgb(255, 244, 229)",
       iconBg: "rgb(254, 201, 15)",
@@ -55,7 +45,7 @@ const Dashboard = () => {
     },
     {
       icon: <BsFillPersonLinesFill />,
-      amount: "250",
+      amount: jumlahSiswa,
       title: "Siswa",
       iconColor: "rgb(255, 244, 229)",
       iconBg: "#fb767c",
@@ -63,7 +53,7 @@ const Dashboard = () => {
     },
     {
       icon: <PiChalkboardTeacher />,
-      amount: "20",
+      amount: jumlahGuru,
       title: "Guru",
       iconColor: "rgb(255, 244, 229)",
       iconBg: "#e76df9",
@@ -79,83 +69,6 @@ const Dashboard = () => {
     },
   ];
 
-  // Data untuk Bar Chart
-  const barChartData = {
-    labels: [
-      "Januari",
-      "Februari",
-      "Maret",
-      "April",
-      "Mei",
-      "Juni",
-      "Juli",
-      "Agustus",
-      "September",
-      "Oktober",
-      "November",
-      "Desember",
-    ],
-    datasets: [
-      {
-        label: "High",
-        data: [20, 25, 22, 30, 28, 33, 25, 26, 27],
-        backgroundColor: "#3877f6",
-      },
-      {
-        label: "Medium",
-        data: [40, 35, 37, 33, 36, 34, 32, 30, 31],
-        backgroundColor: "#cfd931",
-      },
-      {
-        label: "Low",
-        data: [30, 40, 41, 37, 36, 33, 43, 44, 42],
-        backgroundColor: "#f04c11",
-      },
-    ],
-  };
-
-  const barChartOptions = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: "top",
-      },
-      title: {
-        display: true,
-        text: "Evaluasi Kemampuan Siswa per Bulan",
-      },
-    },
-  };
-
-  // Data untuk Pie Chart
-  const pieChartData = {
-    labels: ["High", "Medium", "Low"],
-    datasets: [
-      {
-        data: [300, 400, 500], // Contoh total untuk masing-masing kategori
-        backgroundColor: ["#3877f6", "#cfd931", "#f04c11"],
-      },
-    ],
-  };
-
-  const pieChartOptions = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: "bottom",
-      },
-      title: {
-        display: true,
-        text: "Total Evaluasi Kemampuan Siswa",
-      },
-    },
-  };
-
-  const [gayaBelajar, setGayaBelajar] = useState("");
-  const [showModal, setShowModal] = useState(false);
-  const [modalMessage, setModalMessage] = useState("");
-  const [redirectPath, setRedirectPath] = useState("");
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
@@ -167,7 +80,10 @@ const Dashboard = () => {
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     if (token) {
-      console.log("berhasil");
+      getJumlahModul();
+      getJumlahSoal();
+      getJumlahSiswa();
+      getJumlahGuru();
       if (user && user.role === "admin") {
         // Admin doesn't need profile checks
         console.log("Admin user - no profile checks needed");
@@ -182,6 +98,64 @@ const Dashboard = () => {
       navigate("/");
     }
   }, [navigate, user]);
+
+  const getJumlahModul = async () => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      const response = await axios.get("http://localhost:5000/modul", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setJumlahModul(response.data.length);
+    } catch (error) {
+      console.error("Error get modul", error);
+    }
+  };
+
+  const getJumlahSoal = async () => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      const response = await axios.get("http://localhost:5000/soal", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setJumlahSoal(response.data.length);
+    } catch (error) {
+      console.error("Error get soal", error);
+    }
+  };
+
+  const getJumlahSiswa = async () => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      const response = await axios.get("http://localhost:5000/users", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const siswaUsers = response.data.filter((user) => user.role === "siswa");
+      setJumlahSiswa(siswaUsers.length);
+    } catch (error) {
+      console.error("Error get siswa", error);
+    }
+  };
+
+  const getJumlahGuru = async () => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      const response = await axios.get("http://localhost:5000/users", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const guruUsers = response.data.filter((user) => user.role === "guru");
+      setJumlahGuru(guruUsers.length);
+    } catch (error) {
+      console.error("Error get guru", error);
+    }
+  };
 
   // Function to show modal with specific message and redirect path
   const showProfileModal = (message, path) => {
@@ -286,6 +260,7 @@ const Dashboard = () => {
           </p>
         </div>
       )}
+
       <div className="flex flex-wrap lg:flex-nowrap justify-center">
         <div className="flex m-3 flex-wrap justify-center gap-4 items-center">
           {earningData.map((item) => (
@@ -311,21 +286,13 @@ const Dashboard = () => {
           ))}
         </div>
       </div>
+
       {/* Chart Section */}
       <div className="m-9 flex items-center dark:text-gray-200">
         <BsRecordFill className="mr-2" />
         <h1>Grafik Tingkat Evaluasi Kemampuan Siswa</h1>
       </div>
-      <div className="mt-10 flex flex-col lg:flex-row items-center justify-center gap-10">
-        {/* Bar Chart */}
-        <div className="w-full lg:w-1/2">
-          <Bar data={barChartData} options={barChartOptions} />
-        </div>
-        {/* Pie Chart */}
-        <div className="w-full lg:w-1/3">
-          <Pie data={pieChartData} options={pieChartOptions} />
-        </div>
-      </div>
+      <GrafikEvaluasi />
 
       {/* Modal for profile notification */}
       {showModal && (

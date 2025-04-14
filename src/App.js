@@ -42,6 +42,18 @@ import FillKuesioner from "./Pages/Kuesioner/FillKuesioner";
 import HasilTes from "./Pages/Kuesioner/HasilTes";
 import AddDiscussion from "./Pages/AddDiscussion";
 import EditDiscussion from "./Pages/EditDiscussion";
+import ListDataSoal from "./Pages/Soal/ListDataSoal";
+import AddSoal from "./Pages/Soal/AddSoal";
+import EditSoal from "./Pages/Soal/EditSoal";
+import ListQuiz from "./Pages/Soal/ListQuiz";
+import StartQuiz from "./Pages/Soal/StartQuiz";
+import HasilAkhir from "./Pages/Soal/HasilAkhir";
+import NilaiSaya from "./Pages/Soal/NilaiSaya";
+import DetailNilaiSaya from "./Pages/Soal/DetailNilaiSaya";
+import StartQuizLagi from "./Pages/Soal/StartQuizLagi";
+import ListDataNilai from "./Pages/Soal/ListDataNilai";
+import NotificationsPage from "./Pages/NotificationsPage";
+import ViewDiscussion from "./Pages/ViewDiscussion";
 
 const AppContent = () => {
   const { activeMenu, themeSettings, setThemeSettings, currentColor, currentMode } = useStateContext();
@@ -105,9 +117,11 @@ const AppContent = () => {
               <Route path="/login" element={<LoginPage />} />
               <Route path="/forget-password" element={<ForgetPassword />} />
               <Route path="/reset-password/:token" element={<ResetPassword />} />
+              <Route path="/notifications" element={<NotificationsPage />} />
               <Route path="/form-discussion" element={<FormDiscussion />} />
               <Route path="/diskusi" element={<Discussion />} />
               <Route path="/add-diskusi" element={<AddDiscussion />} />
+              <Route path="/diskusi/view/:id" element={<ViewDiscussion />} />
               <Route path="/diskusi/edit/:id" element={<EditDiscussion />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/tes-gaya-belajar" element={<FillKuesioner />} />
@@ -116,6 +130,16 @@ const AppContent = () => {
               <Route path="/siswa" element={<ListSiswa />} />
               <Route path="/guru" element={<ListGuru />} />
               <Route path="/pelajaran" element={<ListPelajaran />} />
+              <Route path="/data-soal" element={<ListDataSoal />} />
+              <Route path="/data-soal/tambah" element={<AddSoal />} />
+              <Route path="/data-soal/:id" element={<EditSoal />} />
+              <Route path="/quiz" element={<ListQuiz />} />
+              <Route path="/start-quiz" element={<StartQuiz />} />
+              <Route path="/start-quiz-again/:id" element={<StartQuizLagi />} />
+              <Route path="/hasil-quiz/:id" element={<HasilAkhir />} />
+              <Route path="/nilai" element={<ListDataNilai />} />
+              <Route path="/nilai-saya" element={<NilaiSaya />} />
+              <Route path="/nilai-saya/:id" element={<DetailNilaiSaya />} />
               <Route path="/users" element={<ListUsers />} />
               <Route path="/kelas" element={<ListKelas />} />
               <Route path="/kelas/tambah-kelas" element={<AddKelas />} />

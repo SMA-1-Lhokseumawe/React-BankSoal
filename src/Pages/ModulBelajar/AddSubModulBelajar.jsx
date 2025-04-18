@@ -19,6 +19,8 @@ const AddSubModulBelajar = () => {
   const [subDeskripsi, setSubDeskripsi] = useState("");
   const [content, setContent] = useState("");
   const [modulId, setModulId] = useState("");
+  const [audioFile, setAudioFile] = useState(null);
+  const [videoFile, setVideoFile] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [processedContent, setProcessedContent] = useState("");
   const [formErrors, setFormErrors] = useState({});
@@ -92,19 +94,20 @@ const AddSubModulBelajar = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    const jsonData = {
-      subJudul: subJudul,
-      subDeskripsi: subDeskripsi,
-      content: content,
-      modulId: modulId,
-    };
+    const formData = new FormData();
+    formData.append("subJudul", subJudul);
+    formData.append("subDeskripsi", subDeskripsi);
+    formData.append("content", content);
+    formData.append("modulId", modulId);
+    if (audioFile) formData.append("audioFile", audioFile);
+    if (videoFile) formData.append("videoFile", videoFile);
 
     try {
       const token = localStorage.getItem("accessToken");
-      await axios.post("http://localhost:5000/sub-modul", jsonData, {
+      await axios.post("http://localhost:5000/sub-modul", formData, {
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
+          "Content-Type": "multipart/form-data",
         },
       });
       navigate(`/list-sub-modul-belajar/${modulId}`);
@@ -114,6 +117,20 @@ const AddSubModulBelajar = () => {
         error.response ? error.response.data : error.message
       );
       setIsSubmitting(false);
+    }
+  };
+
+  const handleAudioChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setAudioFile(file);
+    }
+  };
+
+  const handleVideoChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setVideoFile(file);
     }
   };
 
@@ -317,6 +334,158 @@ const AddSubModulBelajar = () => {
                 )}
 
                 <div style={{ marginBottom: "30px" }}></div>
+
+                {/* Upload Audio and Video Files */}
+                <div className="space-y-6 mt-8">
+                  <h3
+                    className="text-lg font-medium text-gray-700 dark:text-gray-200 border-b pb-2"
+                    style={{ borderColor: currentColor }}
+                  >
+                    Media Pendukung
+                  </h3>
+
+                  {/* Audio Upload */}
+                  <div className="relative">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                      Audio Narasi
+                    </label>
+                    <div className="flex items-center space-x-3">
+                      <div className="flex-grow">
+                        <div
+                          className="relative border-2 border-dashed rounded-lg p-4 text-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                          style={{ borderColor: currentColor }}
+                        >
+                          <input
+                            type="file"
+                            id="audio-upload"
+                            accept=".mp3, .wav"
+                            onChange={handleAudioChange}
+                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                          />
+                          <div className="flex flex-col items-center justify-center">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 24 24"
+                              fill="currentColor"
+                              className="w-8 h-8 mb-2"
+                              style={{ color: currentColor }}
+                            >
+                              <path d="M8 10a4 4 0 11.002 8.002A4 4 0 018 10zm2 4a2 2 0 11-4 0 2 2 0 014 0z" />
+                              <path d="M16 4a5 5 0 00-5 5v6.5c0 .28.22.5.5.5s.5-.22.5-.5V9a4 4 0 118 0v6.5c0 .28.22.5.5.5s.5-.22.5-.5V9a5 5 0 00-5-5z" />
+                            </svg>
+                            <span
+                              className="font-medium"
+                              style={{ color: currentColor }}
+                            >
+                              {audioFile ? audioFile.name : "Upload Audio"}
+                            </span>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                              Format MP3 atau WAV (Max. 10MB)
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      {audioFile && (
+                        <button
+                          type="button"
+                          onClick={() => setAudioFile(null)}
+                          className="p-2 rounded-full bg-red-100 hover:bg-red-200 dark:bg-red-900 dark:hover:bg-red-800 text-red-600 dark:text-red-200 transition-colors"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-5 w-5"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                        </button>
+                      )}
+                    </div>
+                    {audioFile && (
+                      <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
+                        File terpilih:{" "}
+                        <span className="font-medium">{audioFile.name}</span> (
+                        {(audioFile.size / (1024 * 1024)).toFixed(2)} MB)
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Video Upload */}
+                  <div className="relative">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                      Video Tutorial
+                    </label>
+                    <div className="flex items-center space-x-3">
+                      <div className="flex-grow">
+                        <div
+                          className="relative border-2 border-dashed rounded-lg p-4 text-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                          style={{ borderColor: currentColor }}
+                        >
+                          <input
+                            type="file"
+                            id="video-upload"
+                            accept=".mp4, .avi, .mov"
+                            onChange={handleVideoChange}
+                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                          />
+                          <div className="flex flex-col items-center justify-center">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 24 24"
+                              fill="currentColor"
+                              className="w-8 h-8 mb-2"
+                              style={{ color: currentColor }}
+                            >
+                              <path d="M4 5h16v10H4V5zm16 12v-2H4v2h16zm0-14H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V5a2 2 0 00-2-2z" />
+                              <path d="M10 9l5 3-5 3V9z" />
+                            </svg>
+                            <span
+                              className="font-medium"
+                              style={{ color: currentColor }}
+                            >
+                              {videoFile ? videoFile.name : "Upload Video"}
+                            </span>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                              Format MP4, AVI, atau MOV (Max. 50MB)
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      {videoFile && (
+                        <button
+                          type="button"
+                          onClick={() => setVideoFile(null)}
+                          className="p-2 rounded-full bg-red-100 hover:bg-red-200 dark:bg-red-900 dark:hover:bg-red-800 text-red-600 dark:text-red-200 transition-colors"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-5 w-5"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                        </button>
+                      )}
+                    </div>
+                    {videoFile && (
+                      <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
+                        File terpilih:{" "}
+                        <span className="font-medium">{videoFile.name}</span> (
+                        {(videoFile.size / (1024 * 1024)).toFixed(2)} MB)
+                      </p>
+                    )}
+                  </div>
+                </div>
               </div>
 
               {/* Buttons */}

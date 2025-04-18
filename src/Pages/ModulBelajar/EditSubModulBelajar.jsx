@@ -19,6 +19,12 @@ const EditSubModulBelajar = () => {
   const [subDeskripsi, setSubDeskripsi] = useState("");
   const [content, setContent] = useState("");
   const [modulId, setModulId] = useState("");
+  const [audioFile, setAudioFile] = useState(null);
+  const [videoFile, setVideoFile] = useState(null);
+  const [currentAudioUrl, setCurrentAudioUrl] = useState(null);
+  const [currentVideoUrl, setCurrentVideoUrl] = useState(null);
+  const [deleteAudio, setDeleteAudio] = useState(false);
+  const [deleteVideo, setDeleteVideo] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [processedContent, setProcessedContent] = useState("");
   const [formErrors, setFormErrors] = useState({});
@@ -87,6 +93,8 @@ const EditSubModulBelajar = () => {
     setSubDeskripsi(response.data.subDeskripsi);
     setContent(response.data.content);
     setModulId(response.data.modulId);
+    setCurrentAudioUrl(response.data.urlAudio);
+    setCurrentVideoUrl(response.data.urlVideo);
   };
 
   const updateSubModul = async (e) => {
@@ -99,25 +107,58 @@ const EditSubModulBelajar = () => {
     formData.append("content", content);
     formData.append("modulId", modulId);
 
-    const jsonData = {};
-    formData.forEach((value, key) => {
-      jsonData[key] = value;
-    });
+    // Handle files and deletions
+    if (audioFile) {
+      formData.append("audioFile", audioFile);
+    } else if (deleteAudio) {
+      formData.append("deleteAudio", "true");
+    }
+
+    if (videoFile) {
+      formData.append("videoFile", videoFile);
+    } else if (deleteVideo) {
+      formData.append("deleteVideo", "true");
+    }
 
     try {
       const token = localStorage.getItem("accessToken");
-      await axios.patch(`http://localhost:5000/sub-modul/${id}`, jsonData, {
+      await axios.patch(`http://localhost:5000/sub-modul/${id}`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
+          "Content-Type": "multipart/form-data",
         },
       });
       navigate(`/list-sub-modul-belajar/${modulId}`);
-      setIsSubmitting(false);
     } catch (error) {
       console.log(error);
+    } finally {
       setIsSubmitting(false);
     }
+  };
+
+  // Handlers for file changes
+  const handleAudioChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setAudioFile(file);
+    }
+  };
+
+  const handleVideoChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setVideoFile(file);
+    }
+  };
+
+  const handleDeleteAudio = () => {
+    setDeleteAudio(true);
+    setCurrentAudioUrl(null);
+  };
+
+  const handleDeleteVideo = () => {
+    setDeleteVideo(true);
+    setCurrentVideoUrl(null);
   };
 
   return (
@@ -320,6 +361,335 @@ const EditSubModulBelajar = () => {
                 )}
 
                 <div style={{ marginBottom: "30px" }}></div>
+                {/* Upload Audio and Video Files */}
+                <div className="space-y-6 mt-8">
+                  <h3
+                    className="text-lg font-medium text-gray-700 dark:text-gray-200 border-b pb-2"
+                    style={{ borderColor: currentColor }}
+                  >
+                    Media Pendukung
+                  </h3>
+
+                  {/* Audio Upload */}
+                  <div className="relative">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                      Audio Narasi
+                    </label>
+                    <div className="flex items-center space-x-3">
+                      <div className="flex-grow">
+                        <div
+                          className="relative border-2 border-dashed rounded-lg p-4 text-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                          style={{ borderColor: currentColor }}
+                        >
+                          <input
+                            type="file"
+                            id="audio-upload"
+                            accept=".mp3, .wav"
+                            onChange={handleAudioChange}
+                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                          />
+                          <div className="flex flex-col items-center justify-center">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 24 24"
+                              fill="currentColor"
+                              className="w-8 h-8 mb-2"
+                              style={{ color: currentColor }}
+                            >
+                              <path d="M8 10a4 4 0 11.002 8.002A4 4 0 018 10zm2 4a2 2 0 11-4 0 2 2 0 014 0z" />
+                              <path d="M16 4a5 5 0 00-5 5v6.5c0 .28.22.5.5.5s.5-.22.5-.5V9a4 4 0 118 0v6.5c0 .28.22.5.5.5s.5-.22.5-.5V9a5 5 0 00-5-5z" />
+                            </svg>
+                            <span
+                              className="font-medium"
+                              style={{ color: currentColor }}
+                            >
+                              {audioFile ? audioFile.name : "Upload Audio"}
+                            </span>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                              Format MP3 atau WAV (Max. 10MB)
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      {audioFile && (
+                        <button
+                          type="button"
+                          onClick={() => setAudioFile(null)}
+                          className="p-2 rounded-full bg-red-100 hover:bg-red-200 dark:bg-red-900 dark:hover:bg-red-800 text-red-600 dark:text-red-200 transition-colors"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-5 w-5"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                        </button>
+                      )}
+                    </div>
+                    {audioFile && (
+                      <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
+                        File terpilih:{" "}
+                        <span className="font-medium">{audioFile.name}</span> (
+                        {(audioFile.size / (1024 * 1024)).toFixed(2)} MB)
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Video Upload */}
+                  <div className="relative">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                      Video Tutorial
+                    </label>
+                    <div className="flex items-center space-x-3">
+                      <div className="flex-grow">
+                        <div
+                          className="relative border-2 border-dashed rounded-lg p-4 text-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                          style={{ borderColor: currentColor }}
+                        >
+                          <input
+                            type="file"
+                            id="video-upload"
+                            accept=".mp4, .avi, .mov"
+                            onChange={handleVideoChange}
+                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                          />
+                          <div className="flex flex-col items-center justify-center">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 24 24"
+                              fill="currentColor"
+                              className="w-8 h-8 mb-2"
+                              style={{ color: currentColor }}
+                            >
+                              <path d="M4 5h16v10H4V5zm16 12v-2H4v2h16zm0-14H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V5a2 2 0 00-2-2z" />
+                              <path d="M10 9l5 3-5 3V9z" />
+                            </svg>
+                            <span
+                              className="font-medium"
+                              style={{ color: currentColor }}
+                            >
+                              {videoFile ? videoFile.name : "Upload Video"}
+                            </span>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                              Format MP4, AVI, atau MOV (Max. 50MB)
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      {videoFile && (
+                        <button
+                          type="button"
+                          onClick={() => setVideoFile(null)}
+                          className="p-2 rounded-full bg-red-100 hover:bg-red-200 dark:bg-red-900 dark:hover:bg-red-800 text-red-600 dark:text-red-200 transition-colors"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-5 w-5"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                        </button>
+                      )}
+                    </div>
+                    {videoFile && (
+                      <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
+                        File terpilih:{" "}
+                        <span className="font-medium">{videoFile.name}</span> (
+                        {(videoFile.size / (1024 * 1024)).toFixed(2)} MB)
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Media Preview Section */}
+                {(currentAudioUrl || currentVideoUrl) && (
+                  <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-600">
+                    <h3 className="text-lg font-medium text-gray-700 dark:text-gray-200 mb-4">
+                      Preview Media Terkini
+                    </h3>
+
+                    <div className="space-y-6">
+                      {/* Audio Preview */}
+                      {currentAudioUrl && !deleteAudio && (
+                        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4">
+                          <div className="flex justify-between items-center mb-2">
+                            <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                              Audio Saat Ini
+                            </h4>
+                            <button
+                              type="button"
+                              onClick={handleDeleteAudio}
+                              className="text-red-500 hover:text-red-700 text-sm flex items-center"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-4 w-4 mr-1"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+                              Hapus Audio
+                            </button>
+                          </div>
+                          <div
+                            className="audio-player-container"
+                            style={{
+                              borderLeft: `3px solid ${currentColor}`,
+                              paddingLeft: "12px",
+                            }}
+                          >
+                            <audio
+                              controls
+                              className="w-full max-w-md"
+                              style={{
+                                "--play-button-color": currentColor,
+                                "--range-color": currentColor,
+                              }}
+                            >
+                              <source src={currentAudioUrl} type="audio/mp3" />
+                              Browser Anda tidak mendukung tag audio.
+                            </audio>
+                          </div>
+                          <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                            {audioFile
+                              ? "Audio baru akan menggantikan audio saat ini"
+                              : ""}
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Video Preview */}
+                      {currentVideoUrl && !deleteVideo && (
+                        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4">
+                          <div className="flex justify-between items-center mb-2">
+                            <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                              Video Saat Ini
+                            </h4>
+                            <button
+                              type="button"
+                              onClick={handleDeleteVideo}
+                              className="text-red-500 hover:text-red-700 text-sm flex items-center"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-4 w-4 mr-1"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+                              Hapus Video
+                            </button>
+                          </div>
+                          <div
+                            className="relative mx-auto"
+                            style={{
+                              maxWidth: "600px",
+                              height: "337px",
+                            }}
+                          >
+                            <video
+                              className="w-full h-full rounded-lg object-cover"
+                              controls
+                              style={{
+                                "--play-button-color": currentColor,
+                                "--range-color": currentColor,
+                              }}
+                            >
+                              <source src={currentVideoUrl} type="video/mp4" />
+                              Browser Anda tidak mendukung tag video.
+                            </video>
+                          </div>
+                          <p className="mt-2 text-xs text-gray-500 dark:text-gray-400 text-center">
+                            {videoFile
+                              ? "Video baru akan menggantikan video saat ini"
+                              : ""}
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Deletion Messages */}
+                      {deleteAudio && (
+                        <div className="bg-red-50 dark:bg-red-900/20 p-3 rounded-md text-sm">
+                          <div className="flex items-center">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-5 w-5 text-red-500 mr-2"
+                              viewBox="0 0 20 20"
+                              fill="currentColor"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                            <span className="text-red-700 dark:text-red-300">
+                              Audio akan dihapus setelah menyimpan
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => setDeleteAudio(false)}
+                              className="ml-auto text-red-700 dark:text-red-300 hover:text-red-900 dark:hover:text-red-100"
+                            >
+                              Batalkan
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {deleteVideo && (
+                        <div className="bg-red-50 dark:bg-red-900/20 p-3 rounded-md text-sm">
+                          <div className="flex items-center">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-5 w-5 text-red-500 mr-2"
+                              viewBox="0 0 20 20"
+                              fill="currentColor"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                            <span className="text-red-700 dark:text-red-300">
+                              Video akan dihapus setelah menyimpan
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => setDeleteVideo(false)}
+                              className="ml-auto text-red-700 dark:text-red-300 hover:text-red-900 dark:hover:text-red-100"
+                            >
+                              Batalkan
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Buttons */}

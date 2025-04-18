@@ -120,6 +120,61 @@ const ViewContent = () => {
           dangerouslySetInnerHTML={renderContent()}
         />
       </div>
+      {(moduleData?.urlAudio || moduleData?.urlVideo) && (
+  <div className="space-y-6">
+    {/* Audio Player */}
+    {moduleData.urlAudio && (
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
+        <div
+          className="audio-player-container"
+          style={{
+            borderTop: `2px solid ${currentColor}`,
+            maxWidth: "500px",
+          }}
+        >
+          <audio
+            controls
+            className="w-full mt-2"
+            style={{
+              "--play-button-color": currentColor,
+              "--range-color": currentColor,
+            }}
+          >
+            <source src={moduleData.urlAudio} type="audio/mp3" />
+            Browser Anda tidak mendukung tag audio.
+          </audio>
+        </div>
+      </div>
+    )}
+
+    {/* Video Player */}
+    {moduleData.urlVideo && (
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
+        <div
+          className="relative"
+          style={{
+            width: "600px",
+            height: "400px",
+            paddingTop: "225px", // Maintains 16:9 aspect ratio for 400px width
+          }}
+        >
+          <video
+            className="absolute top-0 left-0 w-full h-full rounded-lg object-cover"
+            controls
+            poster=""
+            style={{
+              "--play-button-color": currentColor,
+              "--range-color": currentColor,
+            }}
+          >
+            <source src={moduleData.urlVideo} type="video/mp4" />
+            Browser Anda tidak mendukung tag video.
+          </video>
+        </div>
+      </div>
+    )}
+  </div>
+)}
     </div>
   );
 };

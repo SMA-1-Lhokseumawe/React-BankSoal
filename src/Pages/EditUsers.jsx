@@ -34,7 +34,8 @@ const EditUsers = () => {
 
   const getUsersById = async () => {
     const token = localStorage.getItem("accessToken");
-    const response = await axios.get(`http://localhost:5000/users/${id}`, {
+    const apiUrl = process.env.REACT_APP_URL_API;
+    const response = await axios.get(`${apiUrl}/users/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -82,7 +83,8 @@ const EditUsers = () => {
 
     try {
       const token = localStorage.getItem("accessToken");
-      await axios.patch(`http://localhost:5000/users/${id}`, jsonData, {
+      const apiUrl = process.env.REACT_APP_URL_API;
+      await axios.patch(`${apiUrl}/users/${id}`, jsonData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",

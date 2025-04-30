@@ -48,7 +48,8 @@ const ListDataSoal = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await axios.get("http://localhost:5000/soal", {
+      const apiUrl = process.env.REACT_APP_URL_API;
+      const response = await axios.get(`${apiUrl}/soal`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -136,7 +137,8 @@ const ListDataSoal = () => {
   const handleDeleteSoal = async (id) => {
     try {
       const token = localStorage.getItem("accessToken");
-      await axios.delete(`http://localhost:5000/soal/${id}`, {
+      const apiUrl = process.env.REACT_APP_URL_API;
+      await axios.delete(`${apiUrl}/soal/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

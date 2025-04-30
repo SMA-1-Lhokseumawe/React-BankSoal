@@ -36,8 +36,9 @@ const ListSubModulBelajar = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
+      const apiUrl = process.env.REACT_APP_URL_API;
       const response = await axios.get(
-        `http://localhost:5000/sub-modul-by-modulid/${id}`,
+        `${apiUrl}/sub-modul-by-modulid/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -57,7 +58,8 @@ const ListSubModulBelajar = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await axios.get(`http://localhost:5000/modul/${id}`, {
+      const apiUrl = process.env.REACT_APP_URL_API;
+      const response = await axios.get(`${apiUrl}/modul/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -81,7 +83,8 @@ const ListSubModulBelajar = () => {
 
   const handleDeleteSubModul = async (userId) => {
     const token = localStorage.getItem("accessToken");
-    await axios.delete(`http://localhost:5000/sub-modul/${userId}`, {
+    const apiUrl = process.env.REACT_APP_URL_API;
+    await axios.delete(`${apiUrl}/sub-modul/${userId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

@@ -45,7 +45,8 @@ const AddSoal = () => {
   const getKelas = async () => {
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await axios.get("http://localhost:5000/all-kelas", {
+      const apiUrl = process.env.REACT_APP_URL_API;
+      const response = await axios.get(`${apiUrl}/all-kelas`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -59,7 +60,8 @@ const AddSoal = () => {
   const getPelajaran = async () => {
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await axios.get("http://localhost:5000/pelajaran", {
+      const apiUrl = process.env.REACT_APP_URL_API;
+      const response = await axios.get(`${apiUrl}/pelajaran`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -99,7 +101,8 @@ const AddSoal = () => {
 
     try {
       const token = localStorage.getItem("accessToken");
-      await axios.post("http://localhost:5000/soal", jsonData, {
+      const apiUrl = process.env.REACT_APP_URL_API;
+      await axios.post(`${apiUrl}/soal`, jsonData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
@@ -120,8 +123,9 @@ const AddSoal = () => {
     formData.append("file", file);
 
     try {
+      const apiUrl = process.env.REACT_APP_URL_API;
       const response = await axios.post(
-        "http://localhost:5000/image",
+        `${apiUrl}/image`,
         formData,
         {
           headers: {

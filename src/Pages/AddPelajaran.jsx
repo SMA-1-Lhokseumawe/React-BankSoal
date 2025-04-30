@@ -32,7 +32,8 @@ const AddPelajaran = () => {
   const getKelas = async () => {
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await axios.get("http://localhost:5000/kelas", {
+      const apiUrl = process.env.REACT_APP_URL_API;
+      const response = await axios.get(`${apiUrl}/kelas`, {
         headers: {
           Authorization: `Bearer ${token}`, // Add token to headers
         },
@@ -54,7 +55,8 @@ const AddPelajaran = () => {
 
     try {
       const token = localStorage.getItem("accessToken");
-      await axios.post("http://localhost:5000/pelajaran", jsonData, {
+      const apiUrl = process.env.REACT_APP_URL_API;
+      await axios.post(`${apiUrl}/pelajaran`, jsonData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",

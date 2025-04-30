@@ -47,7 +47,8 @@ const EditSoal = () => {
   const getKelas = async () => {
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await axios.get("http://localhost:5000/all-kelas", {
+      const apiUrl = process.env.REACT_APP_URL_API;
+      const response = await axios.get(`${apiUrl}/all-kelas`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -61,7 +62,8 @@ const EditSoal = () => {
   const getPelajaran = async () => {
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await axios.get("http://localhost:5000/pelajaran", {
+      const apiUrl = process.env.REACT_APP_URL_API;
+      const response = await axios.get(`${apiUrl}/pelajaran`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -74,7 +76,8 @@ const EditSoal = () => {
 
   const getSoalById = async () => {
     const token = localStorage.getItem("accessToken");
-    const response = await axios.get(`http://localhost:5000/soal/${id}`, {
+    const apiUrl = process.env.REACT_APP_URL_API;
+    const response = await axios.get(`${apiUrl}/soal/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -124,7 +127,8 @@ const EditSoal = () => {
   
     try {
       const token = localStorage.getItem("accessToken");
-      await axios.patch(`http://localhost:5000/soal/${id}`, jsonData, {
+      const apiUrl = process.env.REACT_APP_URL_API;
+      await axios.patch(`${apiUrl}/soal/${id}`, jsonData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
@@ -141,8 +145,9 @@ const EditSoal = () => {
     formData.append("file", file);
 
     try {
+      const apiUrl = process.env.REACT_APP_URL_API;
       const response = await axios.post(
-        "http://localhost:5000/image",
+        `${apiUrl}/image`,
         formData,
         {
           headers: {

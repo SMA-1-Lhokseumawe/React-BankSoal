@@ -4,6 +4,10 @@ import {
   PieChart, Pie, Cell, Sector
 } from 'recharts';
 import axios from 'axios';
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+
+import { getMe } from "../../features/authSlice";
 
 const GrafikEvaluasi = () => {
   // State untuk menyimpan data chart
@@ -11,6 +15,10 @@ const GrafikEvaluasi = () => {
   const [pieData, setPieData] = useState([]);
   const [activeIndex, setActiveIndex] = useState(0);
   const [nilai, setNilai] = useState([]);
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { user } = useSelector((state) => state.auth);
 
   // Warna untuk tiap level
   const COLORS = {
@@ -20,15 +28,24 @@ const GrafikEvaluasi = () => {
   };
 
   useEffect(() => {
-    // Fetch data nilai dari API
-    getNilai();
-  }, []);
+      dispatch(getMe());
+    }, [dispatch]);
+  
+    useEffect(() => {
+      const token = localStorage.getItem("accessToken");
+      if (token) {
+        getNilai()
+      } else {
+        navigate("/login");
+      }
+    }, [navigate, user]);
 
   // Mendapatkan data nilai dari API
   const getNilai = async () => {
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await axios.get("http://localhost:5000/nilai", {
+      const apiUrl = process.env.REACT_APP_URL_API;  // Ambil URL dari .env
+      const response = await axios.get(`${apiUrl}/nilai`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -113,7 +130,7 @@ const GrafikEvaluasi = () => {
           {payload.name}
         </text>
         <text x={cx} y={cy} dy={8} textAnchor="middle" fill="#333" className="text-sm">
-          {value} Siswa
+         {value}: {user.role === "siswa" ? "Soal" : "Siswa"}
         </text>
         <text x={cx} y={cy} dy={25} textAnchor="middle" fill="#999" className="text-xs">
           {`(${(percent * 100).toFixed(1)}%)`}
@@ -148,7 +165,7 @@ const GrafikEvaluasi = () => {
           <p className="font-semibold text-gray-800">{`${label}`}</p>
           {payload.map((entry, index) => (
             <p key={`item-${index}`} style={{ color: entry.fill }}>
-              {`${entry.name}: ${entry.value} Siswa`}
+              {`${entry.name}: ${entry.value} ${user.role === "siswa" ? "Soal" : "Siswa"}`}
             </p>
           ))}
         </div>

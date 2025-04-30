@@ -38,7 +38,8 @@ const AddModulBelajar = () => {
   const getKelas = async () => {
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await axios.get("http://localhost:5000/kelas", {
+      const apiUrl = process.env.REACT_APP_URL_API;
+      const response = await axios.get(`${apiUrl}/kelas`, {
         headers: {
           Authorization: `Bearer ${token}`, // Add token to headers
         },
@@ -52,7 +53,8 @@ const AddModulBelajar = () => {
   const getPelajaran = async () => {
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await axios.get("http://localhost:5000/pelajaran", {
+      const apiUrl = process.env.REACT_APP_URL_API;
+      const response = await axios.get(`${apiUrl}/pelajaran`, {
         headers: {
           Authorization: `Bearer ${token}`, // Add token to headers
         },
@@ -78,7 +80,8 @@ const AddModulBelajar = () => {
   
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await axios.post("http://localhost:5000/modul", jsonData, {
+      const apiUrl = process.env.REACT_APP_URL_API;
+      const response = await axios.post(`${apiUrl}/modul`, jsonData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
@@ -89,7 +92,7 @@ const AddModulBelajar = () => {
       const modulId = response.data.id;
       
       // Navigasi ke halaman add-sub-modul-belajar dengan parameter modulId
-      navigate("/add-sub-modul-belajar", { state: { modulId: modulId } });
+      navigate("/sub-modul-belajar/tambah-sub-modul-belajar", { state: { modulId: modulId } });
     } catch (error) {
       console.error(
         "Error:",

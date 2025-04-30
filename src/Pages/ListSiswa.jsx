@@ -32,7 +32,8 @@ const ListSiswa = () => {
   const getSiswa = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("http://localhost:5000/siswa");
+      const apiUrl = process.env.REACT_APP_URL_API;
+      const response = await axios.get(`${apiUrl}/siswa`);
       setSiswa(response.data);
       setLoading(false);
     } catch (error) {
@@ -47,7 +48,8 @@ const ListSiswa = () => {
 
   const handleDeleteSiswa = async (userId) => {
     const token = localStorage.getItem("accessToken");
-    await axios.delete(`http://localhost:5000/siswa/${userId}`, {
+    const apiUrl = process.env.REACT_APP_URL_API;
+    await axios.delete(`${apiUrl}/siswa/${userId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

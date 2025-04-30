@@ -36,7 +36,8 @@ const EditDiscussion = () => {
 
   const getPostById = async () => {
     const token = localStorage.getItem("accessToken");
-    const response = await axios.get(`http://localhost:5000/post/${id}`, {
+    const apiUrl = process.env.REACT_APP_URL_API;
+    const response = await axios.get(`${apiUrl}/post/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -76,7 +77,8 @@ const EditDiscussion = () => {
 
     try {
       const token = localStorage.getItem("accessToken");
-      await axios.patch(`http://localhost:5000/post/${id}`, formData, {
+      const apiUrl = process.env.REACT_APP_URL_API;
+      await axios.patch(`${apiUrl}/post/${id}`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",

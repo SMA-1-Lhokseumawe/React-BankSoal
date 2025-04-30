@@ -38,7 +38,8 @@ const ListQuiz = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await axios.get("http://localhost:5000/all-soal", {
+      const apiUrl = process.env.REACT_APP_URL_API;
+      const response = await axios.get(`${apiUrl}/all-soal`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

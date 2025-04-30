@@ -70,7 +70,8 @@ const ListModulBelajar = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await axios.get("http://localhost:5000/modul", {
+      const apiUrl = process.env.REACT_APP_URL_API;
+      const response = await axios.get(`${apiUrl}/modul`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -98,7 +99,8 @@ const ListModulBelajar = () => {
   const checkGayaBelajarSiswa = async () => {
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await axios.get("http://localhost:5000/profile-siswa", {
+      const apiUrl = process.env.REACT_APP_URL_API;
+      const response = await axios.get(`${apiUrl}/profile-siswa`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -190,7 +192,8 @@ const ListModulBelajar = () => {
 
   const handleDeleteModul = async (userId) => {
     const token = localStorage.getItem("accessToken");
-    await axios.delete(`http://localhost:5000/modul/${userId}`, {
+    const apiUrl = process.env.REACT_APP_URL_API;
+    await axios.delete(`${apiUrl}/${userId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

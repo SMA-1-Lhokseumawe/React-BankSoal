@@ -39,8 +39,9 @@ const ResetPasswordViaEmail = () => {
     setIsSuccess(false);
 
     try {
+      const apiUrl = process.env.REACT_APP_URL_API;
       const response = await axios.post(
-        "http://localhost:5000/reset-password",
+        `${apiUrl}/reset-password`,
         {
           token,
           newPassword,

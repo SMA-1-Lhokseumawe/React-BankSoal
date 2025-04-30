@@ -23,8 +23,6 @@ const ViewDiscussion = () => {
   const [post, setPost] = useState(null);
   const [allComments, setAllComments] = useState([]);
   const [topUsers, setTopUsers] = useState([]);
-  const [namaProfile, setNamaProfile] = useState("");
-  const [urlImageProfile, seturlImageProfile] = useState("");
   const [showCommentForm, setShowCommentForm] = useState(false);
   const [commentText, setCommentText] = useState("");
   const [isLoading, setIsLoading] = useState(true);
@@ -32,6 +30,10 @@ const ViewDiscussion = () => {
 
   const [editCommentId, setEditCommentId] = useState(null);
   const [editCommentText, setEditCommentText] = useState("");
+
+  // Added state for siswaId and guruId
+  const [siswaId, setSiswaId] = useState("");
+  const [guruId, setGuruId] = useState("");
 
   const [showReplies, setShowReplies] = useState(true);
 
@@ -115,18 +117,19 @@ const ViewDiscussion = () => {
     }
   }, [id, navigate, user]);
 
+  // Added getProfileSiswa function
   const getProfileSiswa = async () => {
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await axios.get("http://localhost:5000/profile-siswa", {
+      const apiUrl = process.env.REACT_APP_URL_API;
+      const response = await axios.get(`${apiUrl}/profile-siswa`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
       if (response.data && response.data.data) {
         const profileData = response.data.data;
-        setNamaProfile(profileData.nama);
-        seturlImageProfile(profileData.url);
+        setSiswaId(profileData.id);
       } else {
         console.error("Format data tidak sesuai:", response.data);
       }
@@ -135,18 +138,19 @@ const ViewDiscussion = () => {
     }
   };
 
+  // Added getProfileGuru function
   const getProfileGuru = async () => {
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await axios.get("http://localhost:5000/profile-guru", {
+      const apiUrl = process.env.REACT_APP_URL_API;
+      const response = await axios.get(`${apiUrl}/profile-guru`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
       if (response.data && response.data.data) {
         const profileData = response.data.data;
-        setNamaProfile(profileData.nama);
-        seturlImageProfile(profileData.url);
+        setGuruId(profileData.id);
       } else {
         console.error("Format data tidak sesuai:", response.data);
       }
@@ -159,7 +163,8 @@ const ViewDiscussion = () => {
     setIsLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await axios.get(`http://localhost:5000/post/${id}`, {
+      const apiUrl = process.env.REACT_APP_URL_API;
+      const response = await axios.get(`${apiUrl}/post/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -181,17 +186,19 @@ const ViewDiscussion = () => {
     setShowReplies(!showReplies);
   };
 
+  // Updated handleAddComment function to include siswaId and guruId
   const handleAddComment = async () => {
     if (commentText.trim()) {
       try {
         const token = localStorage.getItem("accessToken");
+        const apiUrl = process.env.REACT_APP_URL_API;
         await axios.post(
-          "http://localhost:5000/komentar",
+          `${apiUrl}/komentar`,
           {
             content: commentText,
             postId: id,
-            namaProfile: namaProfile,
-            urlImageProfile: urlImageProfile,
+            siswaId: siswaId,
+            guruId: guruId,
           },
           {
             headers: {
@@ -212,7 +219,8 @@ const ViewDiscussion = () => {
   const getAllComments = async () => {
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await axios.get("http://localhost:5000/all-komentar", {
+      const apiUrl = process.env.REACT_APP_URL_API;
+      const response = await axios.get(`${apiUrl}/all-komentar`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -239,8 +247,9 @@ const ViewDiscussion = () => {
     if (editCommentText.trim()) {
       try {
         const token = localStorage.getItem("accessToken");
+        const apiUrl = process.env.REACT_APP_URL_API;
         await axios.patch(
-          `http://localhost:5000/komentar/${editCommentId}`,
+          `${apiUrl}/komentar/${editCommentId}`,
           {
             content: editCommentText,
           },
@@ -263,7 +272,8 @@ const ViewDiscussion = () => {
   const handleDeleteComment = async (commentId) => {
     try {
       const token = localStorage.getItem("accessToken");
-      await axios.delete(`http://localhost:5000/komentar/${commentId}`, {
+      const apiUrl = process.env.REACT_APP_URL_API;
+      await axios.delete(`${apiUrl}/komentar/${commentId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -280,23 +290,67 @@ const ViewDiscussion = () => {
   };
 
   const calculateTopUsers = useCallback(() => {
-    // If we have post data, we can calculate top users from comments
-    if (allComments.length > 0) {
-      const calculatedTopUsers = _(allComments)
-        .groupBy("namaProfile")
-        .map((comments, name) => ({
-          name: name || "Unknown User",
-          posts: comments.length,
-          avatar: name ? name.charAt(0).toUpperCase() : "U",
-          urlImageProfile: comments[0].urlImageProfile,
-        }))
-        .orderBy("posts", "desc")
-        .take(7)
-        .value();
+    // Check if post exists and it's an object (not an array)
+    if (!post) return;
+    
+    // For a single post view, we'll just create a simple array with the post creator
+    const postOwner = {
+      name: post.siswa
+        ? post.siswa.nama
+        : post.guru
+        ? post.guru.nama
+        : post.user.username,
+      posts: 1,
+      avatar: post.siswa
+        ? post.siswa.nama.charAt(0).toUpperCase()
+        : post.guru
+        ? post.guru.nama.charAt(0).toUpperCase()
+        : post.user.username.charAt(0).toUpperCase(),
+      urlImageProfile: post.siswa
+        ? post.siswa.url
+        : post.guru
+        ? post.guru.url
+        : null,
+    };
+    
+    // Get comment authors
+    const commentAuthors = getCommentsForPost().map(comment => ({
+      name: comment.siswa
+        ? comment.siswa.nama
+        : comment.guru
+        ? comment.guru.nama
+        : comment.user.username,
+      posts: 1,
+      avatar: comment.siswa
+        ? comment.siswa.nama.charAt(0).toUpperCase()
+        : comment.guru
+        ? comment.guru.nama.charAt(0).toUpperCase()
+        : comment.user.username.charAt(0).toUpperCase(),
+      urlImageProfile: comment.siswa
+        ? comment.siswa.url
+        : comment.guru
+        ? comment.guru.url
+        : null,
+    }));
+    
+    // Combine post owner with comment authors
+    const allUsers = [postOwner, ...commentAuthors];
+    
+    // Calculate top users
+    const calculatedTopUsers = _(allUsers)
+      .groupBy("name")
+      .map((users, name) => ({
+        name: name,
+        posts: users.length,
+        avatar: users[0].avatar,
+        urlImageProfile: users[0].urlImageProfile,
+      }))
+      .orderBy("posts", "desc")
+      .take(7)
+      .value();
 
-      setTopUsers(calculatedTopUsers);
-    }
-  }, [allComments]);
+    setTopUsers(calculatedTopUsers);
+  }, [post, allComments]);
 
   useEffect(() => {
     calculateTopUsers();
@@ -314,7 +368,11 @@ const ViewDiscussion = () => {
     return (
       <div className="flex justify-center items-center min-h-screen">
         <div className="text-center">
-          <h2 className={`text-xl font-bold ${currentMode === "Dark" ? "text-white" : "text-gray-800"}`}>
+          <h2
+            className={`text-xl font-bold ${
+              currentMode === "Dark" ? "text-white" : "text-gray-800"
+            }`}
+          >
             Discussion not found
           </h2>
           <Button
@@ -482,48 +540,62 @@ const ViewDiscussion = () => {
 
                 {/* User info and timestamp */}
                 <div className="flex items-center mb-4">
-                  {post.urlImageProfile ? (
-                    <img
-                      src={post.urlImageProfile}
-                      alt={`${post.namaProfile}'s profile`}
-                      className="w-8 h-8 rounded-full object-cover mr-3"
-                    />
-                  ) : (
-                    <div
-                      className="w-8 h-8 rounded-full flex items-center justify-center text-white font-medium mr-3"
-                      style={{ backgroundColor: currentColor }}
-                    >
-                      {post.namaProfile.charAt(0)}
-                    </div>
-                  )}
-                  <div>
-                    <p
-                      className={`font-medium ${
-                        currentMode === "Dark"
-                          ? "text-gray-200"
-                          : "text-gray-800"
-                      }`}
-                    >
-                      {post.namaProfile}
-                      <span
-                        className={`ml-2 text-xs font-normal ${
+                  <div className="flex items-center mb-4">
+                    {post.siswa && post.siswa.url ? (
+                      <img
+                        src={post.siswa.url}
+                        alt={`${post.siswa.nama}'s profile`}
+                        className="w-8 h-8 rounded-full object-cover mr-3"
+                      />
+                    ) : post.guru && post.guru.url ? (
+                      <img
+                        src={post.guru.url}
+                        alt={`${post.guru.nama}'s profile`}
+                        className="w-8 h-8 rounded-full object-cover mr-3"
+                      />
+                    ) : (
+                      <div
+                        className="w-8 h-8 rounded-full flex items-center justify-center text-white font-medium mr-3"
+                        style={{ backgroundColor: currentColor }}
+                      >
+                        {(
+                          post.siswa?.nama ||
+                          post.guru?.nama ||
+                          post.user.username
+                        ).charAt(0)}
+                      </div>
+                    )}
+                    <div>
+                      <p
+                        className={`font-medium ${
+                          currentMode === "Dark"
+                            ? "text-gray-200"
+                            : "text-gray-800"
+                        }`}
+                      >
+                        {post.siswa?.nama ||
+                          post.guru?.nama ||
+                          post.user.username}
+                        <span
+                          className={`ml-2 text-xs font-normal ${
+                            currentMode === "Dark"
+                              ? "text-gray-400"
+                              : "text-gray-500"
+                          }`}
+                        >
+                          {post.user.role}
+                        </span>
+                      </p>
+                      <p
+                        className={`text-xs ${
                           currentMode === "Dark"
                             ? "text-gray-400"
                             : "text-gray-500"
                         }`}
                       >
-                        {post.user.role}
-                      </span>
-                    </p>
-                    <p
-                      className={`text-xs ${
-                        currentMode === "Dark"
-                          ? "text-gray-400"
-                          : "text-gray-500"
-                      }`}
-                    >
-                      Posted {new Date(post.updatedAt).toLocaleString()}
-                    </p>
+                        Posted {new Date(post.updatedAt).toLocaleString()}
+                      </p>
+                    </div>
                   </div>
                 </div>
 
@@ -544,9 +616,7 @@ const ViewDiscussion = () => {
                     <FaCommentDots className="mr-1" />
                     <span>
                       {getCommentsForPost().length}{" "}
-                      {getCommentsForPost().length === 1
-                        ? "reply"
-                        : "replies"}
+                      {getCommentsForPost().length === 1 ? "reply" : "replies"}
                     </span>
                   </button>
 
@@ -594,33 +664,51 @@ const ViewDiscussion = () => {
                         <div
                           key={comment.id}
                           className={`p-3 rounded-lg ${
-                            currentMode === "Dark"
-                              ? "bg-dark-bg"
-                              : "bg-gray-50"
+                            currentMode === "Dark" ? "bg-dark-bg" : "bg-gray-50"
                           }`}
                         >
                           <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center">
-                              {comment.urlImageProfile ? (
-                                <img
-                                  src={comment.urlImageProfile}
-                                  alt={`${
-                                    comment.namaProfile ||
-                                    comment.user.username
-                                  }'s profile`}
-                                  className="w-6 h-6 rounded-full object-cover mr-2"
-                                />
+                              {comment.siswa ? (
+                                comment.siswa.url ? (
+                                  <img
+                                    src={comment.siswa.url}
+                                    alt={`${comment.siswa.nama}'s profile`}
+                                    className="w-6 h-6 rounded-full object-cover mr-2"
+                                  />
+                                ) : (
+                                  <div
+                                    className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-medium mr-2"
+                                    style={{
+                                      backgroundColor: currentColor,
+                                    }}
+                                  >
+                                    {comment.siswa.nama.charAt(0).toUpperCase()}
+                                  </div>
+                                )
+                              ) : comment.guru ? (
+                                comment.guru.url ? (
+                                  <img
+                                    src={comment.guru.url}
+                                    alt={`${comment.guru.nama}'s profile`}
+                                    className="w-6 h-6 rounded-full object-cover mr-2"
+                                  />
+                                ) : (
+                                  <div
+                                    className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-medium mr-2"
+                                    style={{
+                                      backgroundColor: currentColor,
+                                    }}
+                                  >
+                                    {comment.guru.nama.charAt(0).toUpperCase()}
+                                  </div>
+                                )
                               ) : (
                                 <div
                                   className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-medium mr-2"
-                                  style={{
-                                    backgroundColor: currentColor,
-                                  }}
+                                  style={{ backgroundColor: currentColor }}
                                 >
-                                  {(
-                                    comment.namaProfile ||
-                                    comment.user.username
-                                  )
+                                  {comment.user.username
                                     .charAt(0)
                                     .toUpperCase()}
                                 </div>
@@ -632,7 +720,11 @@ const ViewDiscussion = () => {
                                     : "text-gray-700"
                                 }`}
                               >
-                                {comment.namaProfile || comment.user.username}
+                                {comment.siswa
+                                  ? comment.siswa.nama
+                                  : comment.guru
+                                  ? comment.guru.nama
+                                  : comment.user.username}
                                 <span
                                   className={`ml-2 text-xs font-normal ${
                                     currentMode === "Dark"
@@ -654,7 +746,7 @@ const ViewDiscussion = () => {
                               >
                                 {new Date(comment.createdAt).toLocaleString()}
                               </span>
-                              {user && comment.user.username === user.username && (
+                              {comment.user.username === user.username && (
                                 <div className="flex ml-3">
                                   <button
                                     onClick={() =>
@@ -776,9 +868,7 @@ const ViewDiscussion = () => {
                     <div className="flex justify-end gap-2">
                       <Button
                         onClick={toggleCommentForm}
-                        color={
-                          currentMode === "Dark" ? "gray-300" : "gray-700"
-                        }
+                        color={currentMode === "Dark" ? "gray-300" : "gray-700"}
                         bgColor={
                           currentMode === "Dark" ? "gray-700" : "#f5f5f5"
                         }
@@ -865,7 +955,7 @@ const ViewDiscussion = () => {
                       : "bg-gray-100 text-gray-600"
                   }`}
                 >
-                  {user.posts} {user.posts === 1 ? "post" : "posts"}
+                  {user.posts} posts
                 </span>
               </li>
             ))}

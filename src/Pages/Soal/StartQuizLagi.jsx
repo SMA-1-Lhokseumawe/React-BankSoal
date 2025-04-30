@@ -68,7 +68,8 @@ const StartQuizLagi = () => {
   const getProfileSiswa = async () => {
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await axios.get("http://localhost:5000/profile-siswa", {
+      const apiUrl = process.env.REACT_APP_URL_API;
+      const response = await axios.get(`${apiUrl}/profile-siswa`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -82,7 +83,8 @@ const StartQuizLagi = () => {
   const fetchQuizData = async () => {
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await axios.get(`http://localhost:5000/nilai/${id}`, {
+      const apiUrl = process.env.REACT_APP_URL_API;
+      const response = await axios.get(`${apiUrl}/nilai/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -210,8 +212,9 @@ const StartQuizLagi = () => {
 
       console.log("Submitting quiz data:", quizResultData);
 
+      const apiUrl = process.env.REACT_APP_URL_API;
       const response = await axios.patch(
-        `http://localhost:5000/nilai/${id}`,
+        `${apiUrl}/nilai/${id}`,
         quizResultData,
         {
           headers: {

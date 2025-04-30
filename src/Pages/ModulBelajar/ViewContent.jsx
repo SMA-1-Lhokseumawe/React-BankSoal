@@ -34,8 +34,9 @@ const ViewContent = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem("accessToken");
+      const apiUrl = process.env.REACT_APP_URL_API;
       const response = await axios.get(
-        `http://localhost:5000/sub-modul/${id}`,
+        `${apiUrl}/sub-modul/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -43,6 +44,8 @@ const ViewContent = () => {
         }
       );
       setContent(response.data.content);
+      console.log(response.data.content);
+      
       setModuleData(response.data);
       setLoading(false);
     } catch (error) {

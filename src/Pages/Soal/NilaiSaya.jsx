@@ -54,7 +54,8 @@ const NilaiSaya = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await axios.get("http://localhost:5000/nilai", {
+      const apiUrl = process.env.REACT_APP_URL_API;
+      const response = await axios.get(`${apiUrl}/nilai`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -77,7 +78,8 @@ const NilaiSaya = () => {
   const getProfileSiswa = async () => {
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await axios.get("http://localhost:5000/profile-siswa", {
+      const apiUrl = process.env.REACT_APP_URL_API;
+      const response = await axios.get(`${apiUrl}/profile-siswa`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -232,9 +234,11 @@ const NilaiSaya = () => {
                   </h2>
                   <span 
                     className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                      item.level === "High" 
-                        ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200" 
-                        : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
+                      item.level === "High"
+                        ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                        : item.level === "Medium"
+                        ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
+                        : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
                     }`}
                   >
                     {item.level}

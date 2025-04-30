@@ -104,7 +104,8 @@ const AddSubModulBelajar = () => {
 
     try {
       const token = localStorage.getItem("accessToken");
-      await axios.post("http://localhost:5000/sub-modul", formData, {
+      const apiUrl = process.env.REACT_APP_URL_API;
+      await axios.post(`${apiUrl}/sub-modul`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",

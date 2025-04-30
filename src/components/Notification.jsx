@@ -3,7 +3,7 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { getMe } from "../features/authSlice";
-import { format, formatDistanceToNow } from 'date-fns';
+import { format, formatDistanceToNow } from "date-fns";
 
 import { MdOutlineCancel } from "react-icons/md";
 import { RiNotification3Line } from "react-icons/ri";
@@ -47,26 +47,32 @@ const Notification = () => {
   const fetchNotifications = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('http://localhost:5000/notifications', {
+      const apiUrl = process.env.REACT_APP_URL_API;
+      const response = await axios.get(`${apiUrl}/notifications`, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('accessToken')}`
-        }
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
       });
       setNotifications(response.data);
       setLoading(false);
     } catch (err) {
       console.error("Error fetching notifications:", err);
-      setError(`Failed to load notifications. Error: ${err.response ? err.response.status : 'Unknown'}`);
+      setError(
+        `Failed to load notifications. Error: ${
+          err.response ? err.response.status : "Unknown"
+        }`
+      );
       setLoading(false);
     }
   };
 
   const fetchUnreadCount = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/notifications/unread-count', {
+      const apiUrl = process.env.REACT_APP_URL_API;
+      const response = await axios.get(`${apiUrl}/notifications/unread-count`, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('accessToken')}`
-        }
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
       });
       setUnreadCount(response.data.count);
     } catch (err) {
@@ -76,19 +82,26 @@ const Notification = () => {
 
   const markAsRead = async (id) => {
     try {
-      await axios.patch(`http://localhost:5000/notifications/${id}/read`, {}, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('accessToken')}`
+      const apiUrl = process.env.REACT_APP_URL_API;
+      await axios.patch(
+        `${apiUrl}/notifications/${id}/read`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
         }
-      });
-      
+      );
+
       // Update the local state to mark this notification as read
-      setNotifications(notifications.map(notif => 
-        notif.id === id ? { ...notif, isRead: true } : notif
-      ));
-      
+      setNotifications(
+        notifications.map((notif) =>
+          notif.id === id ? { ...notif, isRead: true } : notif
+        )
+      );
+
       // Decrement the unread count
-      setUnreadCount(prev => Math.max(0, prev - 1));
+      setUnreadCount((prev) => Math.max(0, prev - 1));
     } catch (err) {
       console.error("Error marking notification as read:", err);
     }
@@ -96,15 +109,22 @@ const Notification = () => {
 
   const markAllAsRead = async () => {
     try {
-      await axios.patch('http://localhost:5000/notifications/read-all', {}, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('accessToken')}`
+      const apiUrl = process.env.REACT_APP_URL_API;
+      await axios.patch(
+        `${apiUrl}/notifications/read-all`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
         }
-      });
-      
+      );
+
       // Update all notifications in the local state
-      setNotifications(notifications.map(notif => ({ ...notif, isRead: true })));
-      
+      setNotifications(
+        notifications.map((notif) => ({ ...notif, isRead: true }))
+      );
+
       // Reset unread count
       setUnreadCount(0);
     } catch (err) {
@@ -114,20 +134,25 @@ const Notification = () => {
 
   const deleteNotification = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/notifications/${id}`, {
+      const apiUrl = process.env.REACT_APP_URL_API;
+      await axios.delete(`${apiUrl}/notifications/${id}`, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('accessToken')}`
-        }
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
       });
-      
+
       // Remove the deleted notification from the list
-      const updatedNotifications = notifications.filter(notif => notif.id !== id);
+      const updatedNotifications = notifications.filter(
+        (notif) => notif.id !== id
+      );
       setNotifications(updatedNotifications);
-      
+
       // Update unread count if the deleted notification was unread
-      const deletedNotification = notifications.find(notif => notif.id === id);
+      const deletedNotification = notifications.find(
+        (notif) => notif.id === id
+      );
       if (deletedNotification && !deletedNotification.isRead) {
-        setUnreadCount(prev => Math.max(0, prev - 1));
+        setUnreadCount((prev) => Math.max(0, prev - 1));
       }
     } catch (err) {
       console.error("Error deleting notification:", err);
@@ -138,14 +163,14 @@ const Notification = () => {
   const formatDate = (date) => {
     const notificationDate = new Date(date);
     const now = new Date();
-    
+
     // If it's today, show relative time
     if (notificationDate.toDateString() === now.toDateString()) {
       return formatDistanceToNow(notificationDate, { addSuffix: true });
     }
-    
+
     // Otherwise, show the date
-    return format(notificationDate, 'MMM dd, yyyy');
+    return format(notificationDate, "MMM dd, yyyy");
   };
 
   const handleClose = () => {
@@ -178,19 +203,26 @@ const Notification = () => {
           onClick={handleClose}
         />
       </div>
-      
+
       {/* Notification List */}
       <div className="mt-3 max-h-80 overflow-y-auto">
         {loading ? (
           <div className="flex items-center justify-center py-4">
-            <div className="w-6 h-6 border-2 border-t-2 rounded-full animate-spin" style={{ borderTopColor: currentColor }}></div>
-            <p className="ml-2 text-gray-500 dark:text-gray-400">Loading notifications...</p>
+            <div
+              className="w-6 h-6 border-2 border-t-2 rounded-full animate-spin"
+              style={{ borderTopColor: currentColor }}
+            ></div>
+            <p className="ml-2 text-gray-500 dark:text-gray-400">
+              Loading notifications...
+            </p>
           </div>
         ) : error ? (
           <div className="text-center py-4">
-            <p className="text-red-500 dark:text-red-400 font-medium">{error}</p>
-            <button 
-              className="mt-2 text-sm hover:underline" 
+            <p className="text-red-500 dark:text-red-400 font-medium">
+              {error}
+            </p>
+            <button
+              className="mt-2 text-sm hover:underline"
               style={{ color: currentColor }}
               onClick={fetchNotifications}
             >
@@ -209,38 +241,61 @@ const Notification = () => {
               className={`relative flex items-start gap-4 p-3 border-b border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${
                 !notification.isRead ? "bg-blue-50 dark:bg-blue-900/20" : ""
               }`}
-              onClick={() => !notification.isRead && markAsRead(notification.id)}
+              onClick={() =>
+                !notification.isRead && markAsRead(notification.id)
+              }
             >
               {/* Side indicator for unread */}
               {!notification.isRead && (
-                <div className="absolute left-0 top-0 bottom-0 w-1 rounded-r-md" style={{ backgroundColor: currentColor }}></div>
+                <div
+                  className="absolute left-0 top-0 bottom-0 w-1 rounded-r-md"
+                  style={{ backgroundColor: currentColor }}
+                ></div>
               )}
-              
+
               {/* User image */}
-              <div className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center overflow-hidden"
-                   style={{ backgroundColor: notification.isRead ? "#9ca3af" : currentColor }}>
-                {notification.urlImageProfile ? (
+              <div
+                className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center overflow-hidden"
+                style={{
+                  backgroundColor: notification.isRead
+                    ? "#9ca3af"
+                    : currentColor,
+                }}
+              >
+                {notification.siswa?.url ? (
                   <img
                     className="h-full w-full object-cover"
-                    src={notification.urlImageProfile}
-                    alt={notification.sourceUser?.username || "User"}
+                    src={notification.siswa.url}
+                    alt={notification.siswa.nama || "Siswa"}
+                  />
+                ) : notification.guru?.url ? (
+                  <img
+                    className="h-full w-full object-cover"
+                    src={notification.guru.url}
+                    alt={notification.guru.nama || "Guru"}
                   />
                 ) : (
                   <div className="text-white text-lg font-semibold">
-                    {notification.sourceUser?.username?.charAt(0)?.toUpperCase() || "U"}
+                    {notification.sourceUser?.username
+                      ?.charAt(0)
+                      ?.toUpperCase() || "U"}
                   </div>
                 )}
               </div>
-              
+
               {/* Content */}
               <div className="flex-grow">
                 <div className="flex justify-between">
-                  <p 
+                  <p
                     className={`font-medium dark:text-gray-200 text-sm leading-snug ${
                       !notification.isRead ? "font-semibold" : ""
                     }`}
                   >
-                    <span className="font-bold">{notification.sourceUser?.username}</span>{" "}
+                    <span className="font-bold">
+                      {notification.siswa?.nama ||
+                        notification.guru?.nama ||
+                        notification.sourceUser?.username}
+                    </span>{" "}
                     {notification.content}
                   </p>
                   <button
@@ -275,7 +330,7 @@ const Notification = () => {
           ))
         )}
       </div>
-      
+
       {/* Footer / Actions */}
       {notifications.length > 0 && !loading && !error && (
         <div className="mt-4 flex justify-between">
@@ -294,7 +349,7 @@ const Notification = () => {
             text="See all"
             borderRadius="10px"
             size="sm"
-            onClick={() => navigate('/notifications')}
+            onClick={() => navigate("/notifications")}
           />
         </div>
       )}

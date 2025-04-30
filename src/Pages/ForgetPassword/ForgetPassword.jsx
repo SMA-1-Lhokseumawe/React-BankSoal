@@ -21,8 +21,9 @@ const ForgetPassword = () => {
     };
 
     try {
+      const apiUrl = process.env.REACT_APP_URL_API;
       const response = await axios.post(
-        "http://localhost:5000/send-link-reset-password",
+        `${apiUrl}/send-link-reset-password`,
         jsonData,
         {
           headers: {

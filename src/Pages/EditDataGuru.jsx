@@ -44,7 +44,8 @@ const EditDataGuru = () => {
 
   const getGuruById = async () => {
     const token = localStorage.getItem("accessToken");
-    const response = await axios.get(`http://localhost:5000/guru/${id}`, {
+    const apiUrl = process.env.REACT_APP_URL_API;
+    const response = await axios.get(`${apiUrl}/guru/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -73,7 +74,8 @@ const EditDataGuru = () => {
     setIsSubmitting(true)
     try {
       const token = localStorage.getItem("accessToken");
-      await axios.patch(`http://localhost:5000/guru/${id}`, formData, {
+      const apiUrl = process.env.REACT_APP_URL_API;
+      await axios.patch(`${apiUrl}/guru/${id}`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",

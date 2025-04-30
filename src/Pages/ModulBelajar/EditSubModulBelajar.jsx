@@ -84,7 +84,8 @@ const EditSubModulBelajar = () => {
 
   const getSubModulById = async () => {
     const token = localStorage.getItem("accessToken");
-    const response = await axios.get(`http://localhost:5000/sub-modul/${id}`, {
+    const apiUrl = process.env.REACT_APP_URL_API;
+    const response = await axios.get(`${apiUrl}/sub-modul/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -122,7 +123,8 @@ const EditSubModulBelajar = () => {
 
     try {
       const token = localStorage.getItem("accessToken");
-      await axios.patch(`http://localhost:5000/sub-modul/${id}`, formData, {
+      const apiUrl = process.env.REACT_APP_URL_API;
+      await axios.patch(`${apiUrl}/sub-modul/${id}`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",

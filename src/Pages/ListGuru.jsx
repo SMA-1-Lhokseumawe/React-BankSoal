@@ -32,7 +32,8 @@ const ListGuru = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await axios.get("http://localhost:5000/guru", {
+      const apiUrl = process.env.REACT_APP_URL_API;
+      const response = await axios.get(`${apiUrl}/guru`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -57,7 +58,8 @@ const ListGuru = () => {
 
   const handleDeleteGuru = async (userId) => {
     const token = localStorage.getItem("accessToken");
-    await axios.delete(`http://localhost:5000/guru/${userId}`, {
+    const apiUrl = process.env.REACT_APP_URL_API;
+    await axios.delete(`${apiUrl}/guru/${userId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

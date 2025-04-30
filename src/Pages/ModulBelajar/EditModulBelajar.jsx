@@ -40,7 +40,8 @@ const EditModulBelajar = () => {
   const getKelas = async () => {
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await axios.get("http://localhost:5000/kelas", {
+      const apiUrl = process.env.REACT_APP_URL_API;
+      const response = await axios.get(`${apiUrl}/kelas`, {
         headers: {
           Authorization: `Bearer ${token}`, // Add token to headers
         },
@@ -54,7 +55,8 @@ const EditModulBelajar = () => {
   const getPelajaran = async () => {
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await axios.get("http://localhost:5000/pelajaran", {
+      const apiUrl = process.env.REACT_APP_URL_API;
+      const response = await axios.get(`${apiUrl}/pelajaran`, {
         headers: {
           Authorization: `Bearer ${token}`, // Add token to headers
         },
@@ -67,7 +69,8 @@ const EditModulBelajar = () => {
 
   const getModulById = async () => {
     const token = localStorage.getItem("accessToken");
-    const response = await axios.get(`http://localhost:5000/modul/${id}`, {
+    const apiUrl = process.env.REACT_APP_URL_API;
+    const response = await axios.get(`${apiUrl}/modul/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -100,7 +103,8 @@ const EditModulBelajar = () => {
 
     try {
       const token = localStorage.getItem("accessToken");
-      await axios.patch(`http://localhost:5000/modul/${id}`, jsonData, {
+      const apiUrl = process.env.REACT_APP_URL_API;
+      await axios.patch(`${apiUrl}/modul/${id}`, jsonData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",

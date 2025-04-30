@@ -27,13 +27,14 @@ const Discussion = () => {
   const [myPost, setMyPost] = useState([]);
   const [allComments, setAllComments] = useState([]);
   const [topUsers, setTopUsers] = useState([]);
-  const [namaProfile, setNamaProfile] = useState("");
-  const [urlImageProfile, seturlImageProfile] = useState("");
   const [showCommentForm, setShowCommentForm] = useState(null);
   const [commentText, setCommentText] = useState("");
   const [activeFilter, setActiveFilter] = useState("All");
   const [isLoading, setIsLoading] = useState(true);
   const [activeMenu, setActiveMenu] = useState(null);
+
+  const [siswaId, setSiswaId] = useState("");
+  const [guruId, setGuruId] = useState("");
 
   const [editCommentId, setEditCommentId] = useState(null);
   const [editCommentText, setEditCommentText] = useState("");
@@ -132,15 +133,15 @@ const Discussion = () => {
   const getProfileSiswa = async () => {
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await axios.get("http://localhost:5000/profile-siswa", {
+      const apiUrl = process.env.REACT_APP_URL_API;
+      const response = await axios.get(`${apiUrl}/profile-siswa`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
       if (response.data && response.data.data) {
         const profileData = response.data.data;
-        setNamaProfile(profileData.nama);
-        seturlImageProfile(profileData.url);
+        setSiswaId(profileData.id);
       } else {
         console.error("Format data tidak sesuai:", response.data);
       }
@@ -152,15 +153,15 @@ const Discussion = () => {
   const getProfileGuru = async () => {
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await axios.get("http://localhost:5000/profile-guru", {
+      const apiUrl = process.env.REACT_APP_URL_API;
+      const response = await axios.get(`${apiUrl}/profile-guru`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
       if (response.data && response.data.data) {
         const profileData = response.data.data;
-        setNamaProfile(profileData.nama);
-        seturlImageProfile(profileData.url);
+        setGuruId(profileData.id);
       } else {
         console.error("Format data tidak sesuai:", response.data);
       }
@@ -173,7 +174,8 @@ const Discussion = () => {
     setIsLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await axios.get("http://localhost:5000/all-post", {
+      const apiUrl = process.env.REACT_APP_URL_API;
+      const response = await axios.get(`${apiUrl}/all-post`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -198,7 +200,8 @@ const Discussion = () => {
     setIsLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await axios.get("http://localhost:5000/post-nocomment", {
+      const apiUrl = process.env.REACT_APP_URL_API;
+      const response = await axios.get(`${apiUrl}/post-nocomment`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -223,7 +226,8 @@ const Discussion = () => {
     setIsLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await axios.get("http://localhost:5000/post", {
+      const apiUrl = process.env.REACT_APP_URL_API;
+      const response = await axios.get(`${apiUrl}/post`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -268,13 +272,14 @@ const Discussion = () => {
     if (commentText.trim()) {
       try {
         const token = localStorage.getItem("accessToken");
+        const apiUrl = process.env.REACT_APP_URL_API;
         await axios.post(
-          "http://localhost:5000/komentar",
+          `${apiUrl}/komentar`,
           {
             content: commentText,
             postId: id,
-            namaProfile: namaProfile,
-            urlImageProfile: urlImageProfile,
+            siswaId: siswaId,
+            guruId: guruId,
           },
           {
             headers: {
@@ -295,7 +300,8 @@ const Discussion = () => {
   const getAllComments = async () => {
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await axios.get("http://localhost:5000/all-komentar", {
+      const apiUrl = process.env.REACT_APP_URL_API;
+      const response = await axios.get(`${apiUrl}/all-komentar`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -322,8 +328,9 @@ const Discussion = () => {
     if (editCommentText.trim()) {
       try {
         const token = localStorage.getItem("accessToken");
+        const apiUrl = process.env.REACT_APP_URL_API;
         await axios.patch(
-          `http://localhost:5000/komentar/${editCommentId}`,
+          `${apiUrl}/komentar/${editCommentId}`,
           {
             content: editCommentText,
           },
@@ -345,7 +352,8 @@ const Discussion = () => {
 
   const handleDeleteComment = async (id) => {
     const token = localStorage.getItem("accessToken");
-    await axios.delete(`http://localhost:5000/komentar/${id}`, {
+    const apiUrl = process.env.REACT_APP_URL_API;
+    await axios.delete(`${apiUrl}/komentar/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -355,7 +363,8 @@ const Discussion = () => {
 
   const handleDeletePost = async (id) => {
     const token = localStorage.getItem("accessToken");
-    await axios.delete(`http://localhost:5000/post/${id}`, {
+    const apiUrl = process.env.REACT_APP_URL_API;
+    await axios.delete(`${apiUrl}/post/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -371,11 +380,29 @@ const Discussion = () => {
 
   const calculateTopUsers = useCallback(() => {
     const calculatedTopUsers = _(post)
-      .groupBy("namaProfile")
+      .map((post) => ({
+        name: post.siswa
+          ? post.siswa.nama
+          : post.guru
+          ? post.guru.nama
+          : post.user.username,
+        posts: 1,
+        avatar: post.siswa
+          ? post.siswa.nama.charAt(0).toUpperCase()
+          : post.guru
+          ? post.guru.nama.charAt(0).toUpperCase()
+          : post.user.username.charAt(0).toUpperCase(),
+        urlImageProfile: post.siswa
+          ? post.siswa.url
+          : post.guru
+          ? post.guru.url
+          : null,
+      }))
+      .groupBy("name")
       .map((posts, name) => ({
         name: name,
         posts: posts.length,
-        avatar: name.charAt(0).toUpperCase(),
+        avatar: posts[0].avatar,
         urlImageProfile: posts[0].urlImageProfile,
       }))
       .orderBy("posts", "desc")
@@ -662,48 +689,62 @@ const Discussion = () => {
 
                   {/* User info and timestamp */}
                   <div className="flex items-center mb-4">
-                    {question.urlImageProfile ? (
-                      <img
-                        src={question.urlImageProfile}
-                        alt={`${question.namaProfile}'s profile`}
-                        className="w-8 h-8 rounded-full object-cover mr-3"
-                      />
-                    ) : (
-                      <div
-                        className="w-8 h-8 rounded-full flex items-center justify-center text-white font-medium mr-3"
-                        style={{ backgroundColor: currentColor }}
-                      >
-                        {question.namaProfile.charAt(0)}
-                      </div>
-                    )}
-                    <div>
-                      <p
-                        className={`font-medium ${
-                          currentMode === "Dark"
-                            ? "text-gray-200"
-                            : "text-gray-800"
-                        }`}
-                      >
-                        {question.namaProfile}
-                        <span
-                          className={`ml-2 text-xs font-normal ${
+                    <div className="flex items-center mb-4">
+                      {question.siswa && question.siswa.url ? (
+                        <img
+                          src={question.siswa.url}
+                          alt={`${question.siswa.nama}'s profile`}
+                          className="w-8 h-8 rounded-full object-cover mr-3"
+                        />
+                      ) : question.guru && question.guru.url ? (
+                        <img
+                          src={question.guru.url}
+                          alt={`${question.guru.nama}'s profile`}
+                          className="w-8 h-8 rounded-full object-cover mr-3"
+                        />
+                      ) : (
+                        <div
+                          className="w-8 h-8 rounded-full flex items-center justify-center text-white font-medium mr-3"
+                          style={{ backgroundColor: currentColor }}
+                        >
+                          {(
+                            question.siswa?.nama ||
+                            question.guru?.nama ||
+                            question.user.username
+                          ).charAt(0)}
+                        </div>
+                      )}
+                      <div>
+                        <p
+                          className={`font-medium ${
+                            currentMode === "Dark"
+                              ? "text-gray-200"
+                              : "text-gray-800"
+                          }`}
+                        >
+                          {question.siswa?.nama ||
+                            question.guru?.nama ||
+                            question.user.username}
+                          <span
+                            className={`ml-2 text-xs font-normal ${
+                              currentMode === "Dark"
+                                ? "text-gray-400"
+                                : "text-gray-500"
+                            }`}
+                          >
+                            {question.user.role}
+                          </span>
+                        </p>
+                        <p
+                          className={`text-xs ${
                             currentMode === "Dark"
                               ? "text-gray-400"
                               : "text-gray-500"
                           }`}
                         >
-                          {question.user.role}
-                        </span>
-                      </p>
-                      <p
-                        className={`text-xs ${
-                          currentMode === "Dark"
-                            ? "text-gray-400"
-                            : "text-gray-500"
-                        }`}
-                      >
-                        Posted {new Date(question.updatedAt).toLocaleString()}
-                      </p>
+                          Posted {new Date(question.updatedAt).toLocaleString()}
+                        </p>
+                      </div>
                     </div>
                   </div>
 
@@ -786,26 +827,50 @@ const Discussion = () => {
                             >
                               <div className="flex items-center justify-between mb-2">
                                 <div className="flex items-center">
-                                  {comment.urlImageProfile ? (
-                                    <img
-                                      src={comment.urlImageProfile}
-                                      alt={`${
-                                        comment.namaProfile ||
-                                        comment.user.username
-                                      }'s profile`}
-                                      className="w-6 h-6 rounded-full object-cover mr-2"
-                                    />
+                                  {comment.siswa ? (
+                                    comment.siswa.url ? (
+                                      <img
+                                        src={comment.siswa.url}
+                                        alt={`${comment.siswa.nama}'s profile`}
+                                        className="w-6 h-6 rounded-full object-cover mr-2"
+                                      />
+                                    ) : (
+                                      <div
+                                        className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-medium mr-2"
+                                        style={{
+                                          backgroundColor: currentColor,
+                                        }}
+                                      >
+                                        {comment.siswa.nama
+                                          .charAt(0)
+                                          .toUpperCase()}
+                                      </div>
+                                    )
+                                  ) : comment.guru ? (
+                                    comment.guru.url ? (
+                                      <img
+                                        src={comment.guru.url}
+                                        alt={`${comment.guru.nama}'s profile`}
+                                        className="w-6 h-6 rounded-full object-cover mr-2"
+                                      />
+                                    ) : (
+                                      <div
+                                        className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-medium mr-2"
+                                        style={{
+                                          backgroundColor: currentColor,
+                                        }}
+                                      >
+                                        {comment.guru.nama
+                                          .charAt(0)
+                                          .toUpperCase()}
+                                      </div>
+                                    )
                                   ) : (
                                     <div
                                       className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-medium mr-2"
-                                      style={{
-                                        backgroundColor: currentColor,
-                                      }}
+                                      style={{ backgroundColor: currentColor }}
                                     >
-                                      {(
-                                        comment.namaProfile ||
-                                        comment.user.username
-                                      )
+                                      {comment.user.username
                                         .charAt(0)
                                         .toUpperCase()}
                                     </div>
@@ -817,8 +882,11 @@ const Discussion = () => {
                                         : "text-gray-700"
                                     }`}
                                   >
-                                    {comment.namaProfile ||
-                                      comment.user.username}
+                                    {comment.siswa
+                                      ? comment.siswa.nama
+                                      : comment.guru
+                                      ? comment.guru.nama
+                                      : comment.user.username}
                                     <span
                                       className={`ml-2 text-xs font-normal ${
                                         currentMode === "Dark"

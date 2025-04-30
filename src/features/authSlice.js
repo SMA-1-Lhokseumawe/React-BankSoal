@@ -13,7 +13,8 @@ export const LoginUser = createAsyncThunk(
   "user/LoginUser",
   async (user, thunkAPI) => {
     try {
-      const response = await axios.post("http://localhost:5000/login", {
+      const apiUrl = process.env.REACT_APP_URL_API;
+      const response = await axios.post(`${apiUrl}/login`, {
         username: user.username,
         password: user.password,
       });
@@ -34,7 +35,8 @@ export const LoginUser = createAsyncThunk(
 export const getMe = createAsyncThunk("user/getMe", async (_, thunkAPI) => {
   try {
     const token = localStorage.getItem("accessToken");
-    const response = await axios.get("http://localhost:5000/me", {
+    const apiUrl = process.env.REACT_APP_URL_API;
+    const response = await axios.get(`${apiUrl}/me`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -51,7 +53,8 @@ export const getMe = createAsyncThunk("user/getMe", async (_, thunkAPI) => {
 export const LogOut = createAsyncThunk("user/LogOut", async (_, thunkAPI) => {
   try {
     const token = localStorage.getItem("accessToken");
-    await axios.delete("http://localhost:5000/logout", {
+    const apiUrl = process.env.REACT_APP_URL_API;
+    await axios.delete(`${apiUrl}/logout`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

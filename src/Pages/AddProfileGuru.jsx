@@ -51,8 +51,9 @@ const AddProfileGuru = () => {
 
     try {
       const token = localStorage.getItem("accessToken");
+      const apiUrl = process.env.REACT_APP_URL_API;
       const response = await axios.post(
-        "http://localhost:5000/guru",
+        `${apiUrl}/guru`,
         formData,
         {
           headers: {

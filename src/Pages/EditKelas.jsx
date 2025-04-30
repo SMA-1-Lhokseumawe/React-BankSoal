@@ -33,7 +33,8 @@ const EditKelas = () => {
 
   const getKelasById = async () => {
     const token = localStorage.getItem("accessToken");
-    const response = await axios.get(`http://localhost:5000/kelas/${id}`, {
+    const apiUrl = process.env.REACT_APP_URL_API;
+    const response = await axios.get(`${apiUrl}/kelas/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -54,7 +55,8 @@ const EditKelas = () => {
 
     try {
       const token = localStorage.getItem("accessToken");
-      await axios.patch(`http://localhost:5000/kelas/${id}`, jsonData, {
+      const apiUrl = process.env.REACT_APP_URL_API;
+      await axios.patch(`${apiUrl}/kelas/${id}`, jsonData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",

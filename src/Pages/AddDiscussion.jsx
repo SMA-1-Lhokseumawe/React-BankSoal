@@ -9,8 +9,8 @@ const AddDiscussion = () => {
   const [judul, setJudul] = useState("");
   const [content, setContent] = useState("");
   const [kategori, setKategori] = useState("");
-  const [namaProfile, setNamaProfile] = useState("");
-  const [urlImageProfile, seturlImageProfile] = useState("");
+  const [siswaId, setSiswaId] = useState("");
+  const [guruId, setGuruId] = useState("");
   const [files, setFiles] = useState([]);
 
   const [isDragging, setIsDragging] = useState(false);
@@ -42,15 +42,17 @@ const AddDiscussion = () => {
   const getProfileSiswa = async () => {
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await axios.get("http://localhost:5000/profile-siswa", {
+      const apiUrl = process.env.REACT_APP_URL_API;
+      const response = await axios.get(`${apiUrl}/profile-siswa`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
       if (response.data && response.data.data) {
         const profileData = response.data.data;
-        setNamaProfile(profileData.nama);
-        seturlImageProfile(profileData.url);
+        setSiswaId(profileData.id);
+        console.log("siswa id" + profileData.id);
+        
       } else {
         console.error("Format data tidak sesuai:", response.data);
       }
@@ -62,15 +64,15 @@ const AddDiscussion = () => {
   const getProfileGuru = async () => {
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await axios.get("http://localhost:5000/profile-guru", {
+      const apiUrl = process.env.REACT_APP_URL_API;
+      const response = await axios.get(`${apiUrl}/profile-guru`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
       if (response.data && response.data.data) {
         const profileData = response.data.data;
-        setNamaProfile(profileData.nama);
-        seturlImageProfile(profileData.url);
+        setGuruId(profileData.id);
       } else {
         console.error("Format data tidak sesuai:", response.data);
       }
@@ -87,8 +89,8 @@ const AddDiscussion = () => {
     formData.append("judul", judul);
     formData.append("content", content);
     formData.append("kategori", kategori);
-    formData.append("namaProfile", namaProfile);
-    formData.append("urlImageProfile", urlImageProfile);
+    formData.append("siswaId", siswaId);
+    formData.append("guruId", guruId);
 
     files.forEach((fileObj) => {
       formData.append("files", fileObj.file);
@@ -96,7 +98,8 @@ const AddDiscussion = () => {
 
     try {
       const token = localStorage.getItem("accessToken");
-      await axios.post("http://localhost:5000/post", formData, {
+      const apiUrl = process.env.REACT_APP_URL_API;
+      await axios.post(`${apiUrl}/post`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",

@@ -7,6 +7,7 @@ import { useStateContext } from "../contexts/ContextProvider";
 
 const AddKelas = () => {
   const [kelas, setKelas] = useState("");
+  const [namaKelas, setNamaKelas] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   const { currentColor } = useStateContext();
@@ -31,6 +32,7 @@ const AddKelas = () => {
     
     const formData = new FormData();
     formData.append("kelas", kelas);
+    formData.append("namaKelas", namaKelas);
 
     const jsonData = {};
     formData.forEach((value, key) => {
@@ -39,8 +41,9 @@ const AddKelas = () => {
 
     try {
       const token = localStorage.getItem("accessToken");
+      const apiUrl = process.env.REACT_APP_URL_API;
       await axios.post(
-        "http://localhost:5000/kelas",
+        `${apiUrl}/kelas`,
         jsonData,
         {
           headers: {
@@ -72,27 +75,57 @@ const AddKelas = () => {
           <div className="p-10">
             <form onSubmit={saveKelas} className="space-y-8">
               <div className="bg-blue-50 dark:bg-gray-700 p-6 rounded-lg">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                  Kelas
+                </label>
+                <div className="relative rounded-md shadow-sm">
+                  <select
+                    name="kelas"
+                    required
+                    className="block w-full px-4 py-3 rounded-md border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:outline-none transition duration-150 appearance-none"
+                    style={{
+                      boxShadow: `0 0 0 1px ${currentColor}`,
+                      borderColor: currentColor,
+                      focus: {
+                        outline: "none",
+                        boxShadow: `0 0 0 2px ${currentColor}`,
+                        borderColor: currentColor,
+                      },
+                    }}
+                    value={kelas}
+                    onChange={(e) => setKelas(e.target.value)}
+                  >
+                    <option value="">Pilih Kelas</option>
+                    <option value="10">Kelas 10</option>
+                    <option value="11">Kelas 11</option>
+                    <option value="12">Kelas 12</option>
+                  </select>
+                </div>
+                <p className="mt-2 text-sm text-gray-500 dark:text-gray-300">
+                  Pilih kelas
+                </p>
+
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2 mt-5">
                   Nama Kelas
                 </label>
                 <div className="relative rounded-md shadow-sm">
                   <input
                     type="text"
-                    name="kelas"
+                    name="namaKelas"
                     required
                     placeholder="Contoh: X-1, XI IPA 2, XII IPS 3"
                     className="block w-full px-4 py-3 rounded-md border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:outline-none transition duration-150"
-                    style={{ 
+                    style={{
                       boxShadow: `0 0 0 1px ${currentColor}`,
                       borderColor: currentColor,
-                      focus: { 
-                        outline: "none", 
-                        boxShadow: `0 0 0 2px ${currentColor}`,  
-                        borderColor: currentColor
-                      }
+                      focus: {
+                        outline: "none",
+                        boxShadow: `0 0 0 2px ${currentColor}`,
+                        borderColor: currentColor,
+                      },
                     }}
-                    value={kelas}
-                    onChange={(e) => setKelas(e.target.value)}
+                    value={namaKelas}
+                    onChange={(e) => setNamaKelas(e.target.value)}
                   />
                 </div>
                 <p className="mt-2 text-sm text-gray-500 dark:text-gray-300">

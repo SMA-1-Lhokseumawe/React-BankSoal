@@ -50,8 +50,9 @@ const GantiPassword = () => {
 
     try {
       const token = localStorage.getItem("accessToken");
+      const apiUrl = process.env.REACT_APP_URL_API;
       const response = await axios.patch(
-        "http://localhost:5000/change-password",
+        `${apiUrl}/change-password`,
         {
           oldPassword,
           newPassword,

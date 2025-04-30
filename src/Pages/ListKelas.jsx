@@ -33,7 +33,8 @@ const ListKelas = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await axios.get("http://localhost:5000/kelas", {
+      const apiUrl = process.env.REACT_APP_URL_API;
+      const response = await axios.get(`${apiUrl}/kelas`, {
         headers: {
           Authorization: `Bearer ${token}`, // Add token to headers
         },
@@ -56,7 +57,8 @@ const ListKelas = () => {
 
   const handleDeleteKelas = async (userId) => {
     const token = localStorage.getItem("accessToken");
-    await axios.delete(`http://localhost:5000/kelas/${userId}`, {
+    const apiUrl = process.env.REACT_APP_URL_API;
+    await axios.delete(`${apiUrl}/kelas/${userId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

@@ -39,7 +39,8 @@ const AddProfileSiswa = () => {
   const getKelas = async () => {
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await axios.get("http://localhost:5000/all-kelas", {
+      const apiUrl = process.env.REACT_APP_URL_API;
+      const response = await axios.get(`${apiUrl}/all-kelas`, {
         headers: {
           Authorization: `Bearer ${token}`, // Add token to headers
         },
@@ -67,8 +68,9 @@ const AddProfileSiswa = () => {
 
     try {
       const token = localStorage.getItem("accessToken");
+      const apiUrl = process.env.REACT_APP_URL_API;
       const response = await axios.post(
-        "http://localhost:5000/siswa",
+        `${apiUrl}/siswa`,
         formData,
         {
           headers: {
@@ -220,13 +222,13 @@ const AddProfileSiswa = () => {
                     <option value="">Pilih Kelas</option>
                     {kelasList.map((kelas) => (
                       <option key={kelas.id} value={kelas.id}>
-                        {kelas.kelas}
+                        {kelas.namaKelas}
                       </option>
                     ))}
                   </select>
                 </div>
                 <p className="mt-2 text-sm text-gray-500 dark:text-gray-300">
-                  Pilih kelas untuk pelajaran ini
+                  Pilih kelas anda
                 </p>
 
                 {/* Replace the current Jenis Kelamin input field with this code */}

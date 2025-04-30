@@ -42,7 +42,8 @@ const HasilAkhir = () => {
 
   const getNilaiById = async () => {
     const token = localStorage.getItem("accessToken");
-    const response = await axios.get(`http://localhost:5000/nilai/${id}`, {
+    const apiUrl = process.env.REACT_APP_URL_API;
+    const response = await axios.get(`${apiUrl}/nilai/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

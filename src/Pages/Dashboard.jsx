@@ -102,7 +102,8 @@ const Dashboard = () => {
   const getJumlahModul = async () => {
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await axios.get("http://localhost:5000/modul", {
+      const apiUrl = process.env.REACT_APP_URL_API;
+      const response = await axios.get(`${apiUrl}/modul`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -116,7 +117,8 @@ const Dashboard = () => {
   const getJumlahSoal = async () => {
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await axios.get("http://localhost:5000/soal", {
+      const apiUrl = process.env.REACT_APP_URL_API;
+      const response = await axios.get(`${apiUrl}/soal`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -130,7 +132,8 @@ const Dashboard = () => {
   const getJumlahSiswa = async () => {
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await axios.get("http://localhost:5000/users", {
+      const apiUrl = process.env.REACT_APP_URL_API;
+      const response = await axios.get(`${apiUrl}/users`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -145,7 +148,8 @@ const Dashboard = () => {
   const getJumlahGuru = async () => {
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await axios.get("http://localhost:5000/users", {
+      const apiUrl = process.env.REACT_APP_URL_API;
+      const response = await axios.get(`${apiUrl}/users`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -175,7 +179,8 @@ const Dashboard = () => {
   const checkSiswaProfile = async () => {
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await axios.get("http://localhost:5000/profile-siswa", {
+      const apiUrl = process.env.REACT_APP_URL_API;
+      const response = await axios.get(`${apiUrl}/profile-siswa`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -211,7 +216,8 @@ const Dashboard = () => {
   const checkGuruProfile = async () => {
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await axios.get("http://localhost:5000/profile-guru", {
+      const apiUrl = process.env.REACT_APP_URL_API;
+      const response = await axios.get(`${apiUrl}/profile-guru`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

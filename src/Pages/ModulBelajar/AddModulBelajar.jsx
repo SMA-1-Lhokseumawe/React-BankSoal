@@ -297,7 +297,7 @@ const AddModulBelajar = () => {
               <div className="flex items-center justify-between pt-8 px-6">
                 <button
                   type="button"
-                  onClick={() => navigate("/pelajaran")}
+                  onClick={() => navigate("/modul-belajar")}
                   className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none"
                   style={{
                     focus: {

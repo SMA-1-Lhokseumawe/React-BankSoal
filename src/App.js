@@ -15,6 +15,7 @@ import ListGuru from "./Pages/ListGuru";
 import ListPelajaran from "./Pages/ListPelajaran";
 import ListKelas from "./Pages/ListKelas";
 import ListUsers from "./Pages/ListUsers";
+import AddUsers from "./Pages/AddUsers";
 import AddKelas from "./Pages/AddKelas";
 import AddPelajaran from "./Pages/AddPelajaran";
 import AddProfileSiswa from "./Pages/AddProfileSiswa";
@@ -141,6 +142,7 @@ const AppContent = () => {
               <Route path="/nilai-saya" element={<NilaiSaya />} />
               <Route path="/nilai-saya/:id" element={<DetailNilaiSaya />} />
               <Route path="/users" element={<ListUsers />} />
+              <Route path="/users/tambah-users" element={<AddUsers />} />
               <Route path="/kelas" element={<ListKelas />} />
               <Route path="/kelas/tambah-kelas" element={<AddKelas />} />
               <Route path="/pelajaran/tambah-pelajaran" element={<AddPelajaran />} />

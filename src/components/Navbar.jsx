@@ -196,7 +196,7 @@ const Navbar = () => {
         >
           <img
             className="rounded-full w-8 h-8"
-            src={urlImage || avatar}
+            src={urlImage && urlImage !== "http://localhost:5000/images/null" ? urlImage : avatar}
             alt="user-profile"
           />
           <p>

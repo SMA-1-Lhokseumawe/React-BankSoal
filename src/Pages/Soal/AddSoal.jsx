@@ -209,7 +209,7 @@ const AddSoal = () => {
                     <option value="">Pilih Kelas</option>
                     {kelasList.map((kelas) => (
                       <option key={kelas.id} value={kelas.id}>
-                        {kelas.kelas}
+                        {kelas.namaKelas}
                       </option>
                     ))}
                   </select>

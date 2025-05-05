@@ -206,7 +206,7 @@ const EditSoal = () => {
         <div className="bg-white dark:bg-secondary-dark-bg rounded-xl shadow-lg overflow-hidden mx-8">
           {/* Header */}
           <div className="py-4 px-6" style={{ backgroundColor: currentColor }}>
-            <h1 className="text-xl font-bold text-white">Tambah Soal</h1>
+            <h1 className="text-xl font-bold text-white">Edit Soal</h1>
           </div>
 
           {/* Form */}
@@ -231,7 +231,7 @@ const EditSoal = () => {
                     <option value="">Pilih Kelas</option>
                     {kelasList.map((kelas) => (
                       <option key={kelas.id} value={kelas.id}>
-                        {kelas.kelas}
+                        {kelas.namaKelas}
                       </option>
                     ))}
                   </select>

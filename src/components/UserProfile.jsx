@@ -114,7 +114,7 @@ const UserProfile = () => {
       <div className="flex gap-5 items-center mt-6 border-color border-b-1 pb-6">
         <img
           className="rounded-full h-24 w-24"
-          src={urlImage || avatar}
+          src={urlImage && urlImage !== "http://localhost:5000/images/null" ? urlImage : avatar}
           alt="user-profile"
         />
         <div>

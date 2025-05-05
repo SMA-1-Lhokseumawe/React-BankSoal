@@ -43,6 +43,10 @@ const ListUsers = () => {
     }
   };
 
+  const handleTambah = () => {
+    navigate("/users/tambah-users");
+  };
+
   const handleEdit = (id) => {
     navigate(`/users/${id}`);
   };
@@ -62,7 +66,15 @@ const ListUsers = () => {
     <div className="m-2 md:m-10 p-2 md:p-10 bg-white dark:text-white dark:bg-secondary-dark-bg rounded-3xl border border-gray-300">
       <div className="flex justify-between items-center header-container">
         <div className="kebawah-dikit">
-          <Header category="Page" title="Data Pelajaran" />
+          <Header category="Page" title="Data Users" />
+        </div>
+        <div className="flex flex-col sm:flex-row items-center search-container">
+          <button
+            onClick={handleTambah}
+            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700 mt-2 sm:mt-0"
+          >
+            Tambah Data
+          </button>
         </div>
       </div>
       <table className="min-w-full leading-normal">

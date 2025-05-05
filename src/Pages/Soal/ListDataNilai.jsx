@@ -18,6 +18,9 @@ const ListDataNilai = () => {
   const [itemsPerPage] = useState(5);
   const [totalPages, setTotalPages] = useState(0);
 
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [selectedGroupDetail, setSelectedGroupDetail] = useState(null);
+
   const { currentColor, currentMode } = useStateContext();
   const [loading, setLoading] = useState(true);
 
@@ -248,6 +251,18 @@ const ListDataNilai = () => {
     }
 
     return pageNumbers;
+  };
+
+  // Fungsi untuk menangani klik pada tombol eye (lihat detail)
+  const handleViewGroupDetail = (group) => {
+    setSelectedGroupDetail(group);
+    setShowDetailModal(true);
+  };
+
+  // Fungsi untuk menutup modal detail
+  const handleCloseDetailModal = () => {
+    setShowDetailModal(false);
+    setSelectedGroupDetail(null);
   };
 
   return (
@@ -563,6 +578,12 @@ const ListDataNilai = () => {
                 >
                   Level Rata-rata
                 </th>
+                <th
+                  scope="col"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                >
+                  Aksi
+                </th>
               </tr>
             </thead>
             <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
@@ -578,9 +599,12 @@ const ListDataNilai = () => {
                   if (!grouped[key]) {
                     grouped[key] = {
                       kelasId,
-                      kelasNama: item.kelas
-                        ? item.kelas.namaKelas
-                        : "Tidak Tersedia",
+                      kelasNama:
+                        item.siswa && item.siswa.kelas
+                          ? item.siswa.kelas.namaKelas
+                          : item.kelas
+                          ? item.kelas.namaKelas
+                          : "Tidak Tersedia",
                       pelajaranId,
                       pelajaranNama: item.pelajaran
                         ? item.pelajaran.pelajaran
@@ -664,6 +688,17 @@ const ListDataNilai = () => {
                           {dominantLevel}
                         </span>
                       </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center space-x-3">
+                          <button
+                            onClick={() => handleViewGroupDetail(group)}
+                            className="flex items-center text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
+                            style={{ color: currentColor }}
+                          >
+                            <FiEye className="mr-1" />
+                          </button>
+                        </div>
+                      </td>
                     </tr>
                   );
                 });
@@ -672,6 +707,149 @@ const ListDataNilai = () => {
           </table>
         </div>
       </div>
+
+      {/* Modal untuk menampilkan detail siswa */}
+      {showDetailModal && selectedGroupDetail && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl overflow-hidden max-w-4xl w-full max-h-[90vh] flex flex-col">
+            <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                Detail Siswa Kelas {selectedGroupDetail.kelasNama} -{" "}
+                {selectedGroupDetail.pelajaranNama}
+              </h3>
+              <button
+                onClick={handleCloseDetailModal}
+                className="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100"
+              >
+                <svg
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+
+            <div className="p-6 overflow-auto">
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                  <thead className="bg-gray-50 dark:bg-gray-700">
+                    <tr>
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                      >
+                        Nama Siswa
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                      >
+                        Jumlah Soal
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                      >
+                        Jawaban Benar
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                      >
+                        Skor
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                      >
+                        Level
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                      >
+                        Tanggal
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                    {nilai
+                      .filter(
+                        (item) =>
+                          // Filter berdasarkan kelas dan pelajaran yang dipilih
+                          item.siswa &&
+                          item.siswa.kelasId === selectedGroupDetail.kelasId &&
+                          item.pelajaranId === selectedGroupDetail.pelajaranId
+                      )
+                      .map((item, index) => (
+                        <tr
+                          key={item.id}
+                          className={
+                            index % 2 === 0
+                              ? "bg-white dark:bg-gray-800"
+                              : "bg-gray-50 dark:bg-gray-700"
+                          }
+                        >
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm font-medium text-gray-900 dark:text-white">
+                              {item.siswa ? item.siswa.nama : "Tidak Tersedia"}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+                            {item.jumlahSoal}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+                            {item.jumlahJawabanBenar}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm font-medium text-gray-900 dark:text-white">
+                              {item.skor}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span
+                              className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                                item.level === "High"
+                                  ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                                  : item.level === "Medium"
+                                  ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
+                                  : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
+                              }`}
+                            >
+                              {item.level}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-xs text-gray-500 dark:text-gray-400">
+                              {formatDateTime(item.updatedAt)}
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700 text-right">
+              <button
+                onClick={handleCloseDetailModal}
+                className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600"
+              >
+                Tutup
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

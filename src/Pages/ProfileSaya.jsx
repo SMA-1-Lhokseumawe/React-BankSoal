@@ -202,7 +202,7 @@ const ProfileSaya = () => {
 
             {/* Profile Avatar - Positioned to overlap the banner */}
             <div className="absolute -top-16 sm:-top-20 w-full flex justify-center">
-              {preview ? (
+              {preview && preview !== "http://localhost:5000/images/null" ? (
                 <div className="w-28 h-28 sm:w-36 sm:h-36 rounded-full border-4 border-white dark:border-gray-800 shadow-lg overflow-hidden">
                   <img
                     src={preview}
